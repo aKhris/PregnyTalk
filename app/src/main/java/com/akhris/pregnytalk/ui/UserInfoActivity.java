@@ -207,6 +207,7 @@ AddChildFragment.Callback
     public void onUserLocationClick(PlaceData placeData) {
         Intent intent = new Intent(this, MapSearchActivity.class);
         intent.putExtra(MapSearchActivity.EXTRA_PLACE_DATA, placeData);
+        intent.putExtra(MapSearchActivity.EXTRA_ICON_ID, R.drawable.ic_home_40dp);
         startActivityForResult(intent, RC_MAP_SEARCH_USER_LOCATION);
     }
 
@@ -214,6 +215,7 @@ AddChildFragment.Callback
     public void onHospitalLocationClick(PlaceData placeData) {
         Intent intent = new Intent(this, MapSearchActivity.class);
         intent.putExtra(MapSearchActivity.EXTRA_PLACE_DATA, placeData);
+        intent.putExtra(MapSearchActivity.EXTRA_ICON_ID, R.drawable.ic_local_hospital_40dp);
         startActivityForResult(intent, RC_MAP_SEARCH_HOSPITAL_LOCATION);
     }
 

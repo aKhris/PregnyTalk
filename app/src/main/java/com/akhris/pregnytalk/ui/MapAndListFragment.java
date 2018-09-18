@@ -31,7 +31,7 @@ import butterknife.ButterKnife;
  * A simple {@link Fragment} subclass.
  */
 public class MapAndListFragment extends NavigationFragment
-        implements ImprovedMapFragment.MapCallback, ImprovedMapFragment.ChatsOnMapCallback{
+        implements ImprovedMapFragment.ChatsOnMapCallback{
 
 
     @BindView(R.id.tl_maps_list_tabs) TabLayout mTabLayout;
@@ -97,11 +97,6 @@ public class MapAndListFragment extends NavigationFragment
             getMapFragment()
                     .withPlacesSearchView(searchView);
         }
-    }
-
-    @Override
-    public void onMapClick(Place place) {
-
     }
 
     @Override

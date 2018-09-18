@@ -1,11 +1,8 @@
 package com.akhris.pregnytalk.ui;
 
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
-import android.view.View;
 import android.widget.Button;
-import android.widget.TextView;
 
 import com.akhris.pregnytalk.R;
 import com.akhris.pregnytalk.contract.PlaceData;
@@ -13,7 +10,6 @@ import com.google.android.gms.location.places.Place;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -21,21 +17,18 @@ import butterknife.OnClick;
 
 public class MapSearchActivity extends AppCompatActivity
         implements OnMapReadyCallback,
-        GoogleMap.InfoWindowAdapter,
         ImprovedMapFragment.MapCallback{
 
     @BindView(R.id.psv_map_search) PlacesSearchView searchView;
     @BindView(R.id.b_choose_place) Button bChoosePlace;
     ImprovedMapFragment improvedMapFragment;
 
+
     public static final String EXTRA_PLACE_DATA = "place_data";
-
-    @Nullable
-    private String mPlaceId;
-
+    public static final String EXTRA_ICON_ID = "icon_id";
     private PlaceData mPlaceData;
+    private int mIconId = ImprovedMapFragment.STANDARD_ICON;
 
-    private GoogleMap mMap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,50 +44,27 @@ public class MapSearchActivity extends AppCompatActivity
         improvedMapFragment.setVerticalPadding(150);
         improvedMapFragment.getMapAsync(this);
         improvedMapFragment.withPlacesSearchView(searchView);
+        if(getIntent()!=null && getIntent().hasExtra(EXTRA_ICON_ID)){
+            mIconId = getIntent().getIntExtra(EXTRA_ICON_ID, ImprovedMapFragment.STANDARD_ICON);
+        }
 
     }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        this.mMap = googleMap;
-        mMap.setInfoWindowAdapter(this);
         if(getIntent()!=null){
             mPlaceData = (PlaceData) getIntent().getSerializableExtra(EXTRA_PLACE_DATA);
             if(mPlaceData!=null){
                 improvedMapFragment
-                        .addMarkerToMap(
+                        .pinMarkerToMap(
                                 mPlaceData.getLatLng(),
                                 mPlaceData.getName(),
-                                null,
-                                ImprovedMapFragment.NO_ICON,
+                                mIconId,
+                                true,
                                 true);
                 searchView.setQuery(mPlaceData.getName(), false);
             }
         }
-    }
-
-
-
-
-
-    @Override
-    // Return null here, so that getInfoContents() is called next.
-    public View getInfoWindow(Marker marker) {
-        return null;
-    }
-
-    @Override
-    public View getInfoContents(Marker marker) {
-        // Inflate the layouts for the info window, title and snippet.
-        View infoWindow = getLayoutInflater().inflate(R.layout.search_map_marker_info_contents, null);
-
-        TextView title = infoWindow.findViewById(R.id.title);
-        title.setText(marker.getTitle());
-
-        TextView snippet = infoWindow.findViewById(R.id.snippet);
-        snippet.setText(marker.getSnippet());
-
-        return infoWindow;
     }
 
     @OnClick(R.id.b_choose_place)

@@ -77,4 +77,6 @@
     <string name="picture_chooser_title">Please choose a picture using</string>
     <string name="chatroom_deleted_snackbar_text">Chatroom %s is deleted.</string>
     <string name="snackbar_undo">undo</string>
+    <string name="warning_check_internet">Please check internet connection!</string>
+    <string name="marker_info_click_to_create">Click to create new chat here</string>
 </resources>

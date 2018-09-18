@@ -40,7 +40,7 @@ public class LoadPlaceTask extends AsyncTaskLoader<Void> {
                     if(task.isSuccessful()){
                         PlaceBufferResponse places = task.getResult();
                         Place loadedPlace = places.get(0);
-                        mCallback.onPlaceLoaded(loadedPlace);
+                        mCallback.onPlaceLoaded(loadedPlace.freeze());
                         places.release();
                     }
                 });

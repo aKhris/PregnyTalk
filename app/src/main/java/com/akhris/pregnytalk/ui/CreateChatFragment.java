@@ -13,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.ImageButton;
 
 import com.akhris.pregnytalk.App;
 import com.akhris.pregnytalk.MainActivity;
@@ -36,6 +37,7 @@ public class CreateChatFragment extends DialogFragment implements PlacesSearchVi
 
     @BindView(R.id.psv_new_chat_place_search) PlacesSearchView mPlaceSearch;
     @BindView(R.id.et_new_chat_name) EditText mChatName;
+    @BindView(R.id.ib_new_chat_map) ImageButton mMapButton;
 
     private static final int RC_MAP_SEARCH_USER_LOCATION = 10;
 
@@ -45,6 +47,8 @@ public class CreateChatFragment extends DialogFragment implements PlacesSearchVi
 
     private View mRootView;
     private Callback mCallback;
+
+    private boolean mShowMapIcon=true;
 
     /**
      * Creating new instance of CreateChatFragment
@@ -79,6 +83,7 @@ public class CreateChatFragment extends DialogFragment implements PlacesSearchVi
         super.onCreate(savedInstanceState);
         if(getArguments()!=null && getArguments().containsKey(BUNDLE_CHAT_ROOM)){
             mChatRoom = (ChatRoom) getArguments().getSerializable(BUNDLE_CHAT_ROOM);
+            mShowMapIcon=false;
         } else {
             mChatRoom = new ChatRoom();
             mChatRoom.setAdminId(MainActivity.sMyUid);
@@ -109,6 +114,9 @@ public class CreateChatFragment extends DialogFragment implements PlacesSearchVi
                 mPlaceSearch.setQuery(mChatRoom.getLocation().getName(), false);
             }
         mPlaceSearch.setmCallback(this);
+            if(!mShowMapIcon){
+                mMapButton.setVisibility(View.GONE);
+            }
         return mRootView;
     }
 

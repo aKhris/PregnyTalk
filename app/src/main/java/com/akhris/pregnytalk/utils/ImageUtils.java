@@ -5,6 +5,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapShader;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.Drawable;
 import android.support.v4.content.ContextCompat;
 
@@ -17,10 +19,9 @@ import com.squareup.picasso.Transformation;
  */
 public class ImageUtils {
 
-
     /**
      * For using vector drawables with markers.
-     * Solution got here: https://stackoverflow.com/a/45564994/7635275
+     * Solution got here: https://stackoverflow.com/a/45564994/
      */
     public static BitmapDescriptor bitmapDescriptorFromVector(Context context, int vectorResId) {
         Drawable vectorDrawable = ContextCompat.getDrawable(context, vectorResId);

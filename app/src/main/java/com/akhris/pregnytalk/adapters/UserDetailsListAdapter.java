@@ -95,7 +95,7 @@ public class UserDetailsListAdapter extends RecyclerView.Adapter<RecyclerView.Vi
     }
 
     private void bindUserLocation(ViewHolderFactory.TwoLineWithIconItemViewHolder holder) {
-        holder.icon.setImageResource(R.drawable.ic_location_on_black_24dp);
+        holder.icon.setImageResource(R.drawable.ic_home_40dp);
         holder.bottomText.setText(R.string.user_info_title_location);
         final PlaceData userLocationPlaceData = mUser.getUserLocationPlaceData();
         if(userLocationPlaceData!=null){
@@ -113,7 +113,7 @@ public class UserDetailsListAdapter extends RecyclerView.Adapter<RecyclerView.Vi
             holder.topText.clearComposingText();
         }
         holder.bottomText.setText(R.string.user_info_title_hospital);
-        holder.icon.setImageResource(R.drawable.ic_local_hospital_black_24dp);
+        holder.icon.setImageResource(R.drawable.ic_local_hospital_40dp);
 
     }
 

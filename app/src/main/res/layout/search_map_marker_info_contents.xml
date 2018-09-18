@@ -4,16 +4,25 @@
     android:layout_height="wrap_content"
     android:orientation="vertical">
     <TextView
+        android:textAppearance="@style/TextAppearance.AppCompat.Headline"
         android:id="@+id/title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:textColor="#ff000000"
         android:textStyle="bold" />
 
     <TextView
         android:id="@+id/snippet"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="#ff7f7f7f" />
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+
+    <TextView
+        android:id="@+id/tv_marker_info_create_chat"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/marker_info_click_to_create"
+        android:textAppearance="@style/TextAppearance.AppCompat.Tooltip"
+        android:layout_margin="8dp"
+        />
 </LinearLayout>

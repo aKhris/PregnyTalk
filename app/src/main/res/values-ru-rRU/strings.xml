@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">PregnyTalk</string>
+    <string name="chat_fragment_toolbar_subtitle_format_string">Пользователи: %d</string>
+    <string name="chat_with_format_string">Беседа с %s</string>
+    <string name="chat_join_dialog_title">Вы хотите присоединиться к беседе?</string>
+    <string name="chat_join_dialog_positive_button">Присоединиться</string>
+    <string name="marker_info_click_to_join">Нажмите для присоединения к беседе</string>
+    <string name="viewpager_title_list_format">Список (%d)</string>
+    <string name="users_count_format_string">%d пользователей</string>
+    <string name="chat_room_created">(беседа создана)</string>
+    <string name="chat_info_empty_location_message">Пожалуйста, укажите расположение</string>
+    <string name="chat_info_empty_location_and_message">добавить расположение</string>
+    <string name="chat_info_empty_name_message">Пожалуйста, укажите имя беседы</string>
+    <string name="chat_info_button_ok">Добавить новую беседу</string>
+    <string name="chat_create_dialog_title">Создать новую беседу...</string>
+    <string name="chat_info_enter_chat_name_hint">имя беседы</string>
+    <string name="chat_info_location_query_hint">расположение беседы</string>
+    <string name="user_info_username_hint">Введите ваше имя</string>
+    <string name="search_map_choose_place">Выбрать это место</string>
+    <string name="user_info_hint_estimated_date">Нажмите для установки предполагаемой даты родов</string>
+    <string name="user_info_hint_date_of_birth">Нажмите для установки даты рождения</string>
+    <string name="user_info_title_date_of_birth">Дата рождения</string>
+    <string name="user_info_title_hospital">Роддом</string>
+    <string name="user_info_title_location">Расположение</string>
+    <string name="user_info_title_children">Дети</string>
+    <string name="user_info_title_edd">Предполагаемая дата родов</string>
+    <string name="user_info_title_age">Возраст:</string>
+    <string name="action_search">Поиск</string>
+    <string name="toolbar_title_contacts">Контакты</string>
+    <string name="toolbar_title_settingsfragment">Настройки</string>
+    <string name="toolbar_title_mapsandlistfragment">Карта</string>
+    <string name="toolbar_title_chatslistfragment">Сообщения</string>
+    <string name="title_activity_maps">Карта</string>
+    <string name="nav_title_settings">Настройки</string>
+    <string name="nav_title_map">Карта</string>
+    <string name="nav_title_contacts">Контакты</string>
+    <string name="nav_title_messages">Сообщения</string>
+    <string name="viewpager_title_list">Список</string>
+    <string name="viewpager_title_map">Карта</string>
+    <string name="content_description_user_avatar">Фото пользователя</string>
+    <string name="hint_write_your_message">Напишите сообщение…</string>
+    <string name="content_description_attach_image">Прикрепить изображение</string>
+    <string name="action_settings">Настройки</string>
+</resources>

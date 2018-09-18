@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    >
+
+    <FrameLayout
+        android:id="@+id/fl_map_fragment_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+    <com.akhris.pregnytalk.ui.PlacesSearchView
+        android:id="@+id/psv_map_search"
+        android:layout_width="match_parent"
+        android:layout_margin="8dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|center_horizontal"
+        android:background="@color/cardview_light_background"
+
+        />
+    <Button
+        android:id="@+id/b_choose_place"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        style="@style/Widget.AppCompat.Button.Borderless.Colored"
+        android:text="@string/search_map_choose_place"
+        android:enabled="false"
+        android:layout_margin="8dp"
+        android:layout_gravity="bottom|center_horizontal"
+        android:background="@color/cardview_light_background"
+        />
+
+</FrameLayout>

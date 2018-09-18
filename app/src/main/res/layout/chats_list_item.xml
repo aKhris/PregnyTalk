@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout android:layout_width="match_parent"
+    android:layout_height="88dp"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <include layout="@layout/swipe_item_delete_background"/>
+
+<android.support.constraint.ConstraintLayout
+    android:id="@+id/foreground"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="@color/listItemBackground"
+    >
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline_hor_28"
+        style="@style/HorizontalGuideLine"
+        app:layout_constraintGuide_begin="28dp"
+        />
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline_hor_76"
+        style="@style/HorizontalGuideLine"
+        app:layout_constraintGuide_begin="76dp"
+        />
+
+    <TextView
+        android:id="@+id/tv_chat_name"
+        style="@style/TextOverline"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        tools:text="Ждем чуда в марте 2019"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/guideline_hor_28"
+        />
+
+    <TextView
+        android:id="@+id/tv_chat_message_timestamp"
+        style="@style/TextOverline"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        tools:text="16:28"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/guideline_hor_28"
+        />
+
+    <TextView
+        android:id="@+id/tv_chat_user_name"
+        style="@style/TextFirstLine"
+        tools:text="Julia"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        app:layout_constraintTop_toBottomOf="@id/guideline_hor_28"
+        app:layout_constraintLeft_toLeftOf="parent"
+        />
+
+    <TextView
+        android:id="@+id/tv_chat_last_message"
+        style="@style/TextBottom"
+        tools:text="Hello everybody!"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        app:layout_constraintBottom_toTopOf="@id/guideline_hor_76"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:maxLines="1"
+        android:ellipsize="end"
+        />
+
+
+
+</android.support.constraint.ConstraintLayout>
+</FrameLayout>

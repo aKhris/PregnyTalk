@@ -1,0 +1,80 @@
+<resources>
+    <string name="app_name">PregnyTalk</string>
+    <string name="navigation_drawer_open" translatable="false">Open navigation drawer</string>
+    <string name="navigation_drawer_close" translatable="false">Close navigation drawer</string>
+    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="action_settings">Settings</string>
+
+    <string name="content_description_attach_image">Attach image</string>
+    <string name="hint_write_your_message">Write your message here…</string>
+    <string name="content_description_user_avatar">User avatar</string>
+    <string name="viewpager_title_map">Map</string>
+    <string name="viewpager_title_list">List</string>
+    <string name="nav_title_messages">Messages</string>
+    <string name="nav_title_contacts">Contacts</string>
+    <string name="nav_title_map">Map</string>
+    <string name="nav_title_settings">Settings</string>
+    <string name="title_activity_maps">Map</string>
+    <string name="toolbar_title_chatslistfragment">Messages</string>
+    <string name="toolbar_title_mapsandlistfragment">Map</string>
+    <string name="toolbar_title_settingsfragment">Settings</string>
+    <string name="toolbar_title_contacts">Contacts</string>
+    <string name="action_search">Search</string>
+    <string name="user_info_title_age">Age:</string>
+    <string name="user_info_title_edd">Estimated delivery date</string>
+    <string name="user_info_title_children">Children</string>
+    <string name="user_info_title_location">Location</string>
+    <string name="user_info_title_hospital">Maternity hospital</string>
+    <string name="user_info_title_date_of_birth">Date of birth</string>
+    <string name="user_info_hint_date_of_birth">Click to set date of birth</string>
+    <string name="user_info_hint_estimated_date">Click to set estimated delivery date</string>
+    <string name="search_map_choose_place">Choose this place</string>
+    <string name="user_info_username_hint">Enter your name</string>
+
+    <string name="chat_info_location_query_hint">chat location</string>
+    <string name="chat_info_enter_chat_name_hint">chat name</string>
+    <string name="chat_create_dialog_title">Create new chat room…</string>
+    <string name="chat_info_button_ok">Add new chat</string>
+    <string name="chat_info_empty_name_message">Please specify the chat name</string>
+    <string name="chat_info_empty_location_and_message">and location</string>
+    <string name="chat_info_empty_location_message">Please specify the location</string>
+    <string name="chat_room_created">(chat room just created)</string>
+    <string name="users_count_format_string">%d user(s)</string>
+    <string name="viewpager_title_list_format">List (%d)</string>
+    <string name="marker_info_click_to_join">Click to join the chat</string>
+    <string name="chat_join_dialog_title">Would you like to join the chat?</string>
+    <string name="chat_join_dialog_positive_button">JOIN</string>
+    <string name="nav_header_desc_info">User info</string>
+    <string name="transition_user_info_photo" translatable="false">user_info_photo</string>
+    <string name="transition_user_info_name" translatable="false">user_info_name</string>
+    <string name="chat_with_format_string">Chat with %s</string>
+    <string name="chat_fragment_toolbar_subtitle_format_string">Users: %d</string>
+    <string name="action_info">Info</string>
+    <string name="chat_info_chat_type_title">Chat visibility</string>
+    <string name="chat_info_chat_type_public">Public</string>
+    <string name="chat_info_chat_type_private">Private</string>
+    <string name="chat_info_location_title">Chat location</string>
+    <string name="chat_info_created_at">Created at</string>
+    <string name="chat_info_description">Description</string>
+    <string name="chat_info_name">Name of the chat</string>
+    <string name="chat_info_users">Users:</string>
+    <string name="chat_info_users_total_count_format_string">Total count: %d</string>
+    <string name="chat_info_title">Chat info:</string>
+
+    <string name="chat_info_fragment_title">Chat details</string>
+    <string name="chat_info_edit_name">Edit chat name</string>
+    <string name="chat_info_edit_description">Edit chat description</string>
+    <string name="chat_info_edit_button_ok">Ok</string>
+    <string name="children_add">+</string>
+    <string name="add_child_dialog_title">Add new child</string>
+    <string name="add_child_dialog_name_hint">Child name</string>
+    <string name="sex_male">Male</string>
+    <string name="sex_female">Female</string>
+    <string name="add_child_add_button">Add new child</string>
+    <string name="add_child_dialog_date_of_birth_hint">Date of birth</string>
+    <string name="picture_chooser_title">Please choose a picture using</string>
+    <string name="chatroom_deleted_snackbar_text">Chatroom %s is deleted.</string>
+    <string name="snackbar_undo">undo</string>
+</resources>

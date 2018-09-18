@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout
+    android:id="@+id/cl_user_info_parent"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:fitsSystemWindows="true"
+    >
+
+        <android.support.design.widget.AppBarLayout
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:fitsSystemWindows="true">
+
+            <android.support.design.widget.CollapsingToolbarLayout
+                android:id="@+id/collapsing_toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:layout_scrollFlags="scroll"
+                android:fitsSystemWindows="true"
+                app:expandedTitleMarginStart="48dp"
+                app:expandedTitleMarginEnd="64dp"
+                app:titleEnabled="false"
+                >
+
+
+                <android.support.v7.widget.Toolbar
+                    android:id="@+id/toolbar"
+                    android:layout_width="match_parent"
+                    android:layout_height="?attr/actionBarSize"
+                    app:popupTheme="@style/AppTheme.PopupOverlay"
+                    android:fitsSystemWindows="true"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:navigationIcon="@drawable/ic_arrow_back_black_24dp"
+                    />
+
+                <ImageView
+                    android:id="@+id/iv_user_info_picture"
+                    android:layout_width="80dp"
+                    android:layout_height="80dp"
+                    android:layout_marginTop="?attr/actionBarSize"
+                    android:scaleType="center"
+                    app:srcCompat="@drawable/ic_add_a_photo_32dp"
+                    android:contentDescription="@string/content_description_user_avatar"
+                    android:fitsSystemWindows="true"
+                    android:transitionName="@string/transition_user_info_photo"
+                    />
+
+                <ImageView
+                    android:id="@+id/iv_user_info_add_to_contacts"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:tint="@color/primaryLightColor"
+                    android:layout_margin="16dp"
+                    android:layout_gravity="end|top"
+                    />
+
+                <EditText
+                    android:id="@+id/et_user_info_user_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/user_info_username_hint"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+                    android:layout_gravity="bottom|center_horizontal"
+                    android:gravity="center_horizontal"
+                    />
+
+            </android.support.design.widget.CollapsingToolbarLayout>
+
+        </android.support.design.widget.AppBarLayout>
+
+       <android.support.v4.widget.NestedScrollView
+           android:layout_width="match_parent"
+           android:layout_height="match_parent"
+           app:layout_behavior="@string/appbar_scrolling_view_behavior"
+           >
+
+           <android.support.v7.widget.RecyclerView
+               android:id="@+id/rv_user_info_details_list"
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content"
+
+               />
+
+       </android.support.v4.widget.NestedScrollView>
+
+
+
+
+
+</android.support.design.widget.CoordinatorLayout>

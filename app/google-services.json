@@ -1,0 +1,63 @@
+{
+  "project_info": {
+    "project_number": "704633661862",
+    "firebase_url": "https://pregnytalk-1534434532706.firebaseio.com",
+    "project_id": "pregnytalk-1534434532706",
+    "storage_bucket": "pregnytalk-1534434532706.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:704633661862:android:ca8338c01cede0eb",
+        "android_client_info": {
+          "package_name": "com.akhris.pregnytalk"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "704633661862-anlmi8leqsdo0rkfj94lape8c9ss95js.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.akhris.pregnytalk",
+            "certificate_hash": "0d7a3b14b9195f513cd4e5e9f85d47382ca61954"
+          }
+        },
+        {
+          "client_id": "704633661862-dnl0j0724p8pf0rsf4k092kpgmac852f.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.akhris.pregnytalk",
+            "certificate_hash": "4ea81c034d23e0f03615bf52ed1d9fc49d306da7"
+          }
+        },
+        {
+          "client_id": "704633661862-gjkvc1de1u9rf8flk6blnt34mlbs64vm.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAgHqwyzk-2Xzi36ik5x6enpDpZEkpeKfo"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "704633661862-gjkvc1de1u9rf8flk6blnt34mlbs64vm.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

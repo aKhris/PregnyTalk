@@ -8,7 +8,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.DialogFragment;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,6 +22,8 @@ import com.akhris.pregnytalk.contract.PlaceData;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.PlaceBufferResponse;
 import com.google.android.gms.maps.model.LatLng;
+
+import java.util.HashMap;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -54,7 +55,6 @@ public class CreateChatFragment extends DialogFragment implements PlacesSearchVi
      * Creating new instance of CreateChatFragment
      * @param chatRoom - pass ChatRoom to edit it's name or location
      *                 - pass null to make new ChatRoom
-     * @return
      */
     public static CreateChatFragment newInstance(@Nullable ChatRoom chatRoom) {
         CreateChatFragment fragment = new CreateChatFragment();
@@ -86,10 +86,8 @@ public class CreateChatFragment extends DialogFragment implements PlacesSearchVi
             mShowMapIcon=false;
         } else {
             mChatRoom = new ChatRoom();
-            mChatRoom.setAdminId(MainActivity.sMyUid);
-            mChatRoom.setType(ChatRoom.TYPE_PUBLIC);
         }
-
+        checkChatRoom();
         if(getParentFragment() instanceof Callback){
             mCallback = (Callback) getParentFragment();
         }
@@ -102,6 +100,18 @@ public class CreateChatFragment extends DialogFragment implements PlacesSearchVi
                             contextString, parentFragmentString)
             );
         }
+    }
+
+    /**
+     * Checking if ChatRoom has all sufficient data.
+     * Since we are creating new chat room here it must have user's id as admin id
+     * and have user in the usersMap.
+     */
+    private void checkChatRoom() {
+        mChatRoom.setAdminId(MainActivity.sMyUid);
+        HashMap<String, String> usersMap = new HashMap<>();
+        usersMap.put(MainActivity.sMyUid, MainActivity.sMe.getName());
+        mChatRoom.setUsersMap(usersMap);
     }
 
     @Override

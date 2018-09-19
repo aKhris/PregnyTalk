@@ -2,22 +2,20 @@ package com.akhris.pregnytalk.adapters;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.View;
 import android.view.ViewGroup;
 
 import com.akhris.pregnytalk.R;
+import com.akhris.pregnytalk.adapters.ViewHolderFactory.TwoLineWithIconItemViewHolder;
 import com.akhris.pregnytalk.contract.Child;
 import com.akhris.pregnytalk.contract.PlaceData;
 import com.akhris.pregnytalk.contract.User;
 import com.akhris.pregnytalk.utils.DateUtils;
 
-import java.util.ArrayList;
 import java.util.Map;
 
-public class UserDetailsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
-        implements ItemClickListener, ChildrenClickListener, ChildrenListAdapter.ChildCallback {
+public class UserDetailsListAdapter extends RecyclerView.Adapter<TwoLineWithIconItemViewHolder>
+        implements ItemClickListener, ChildrenClickListener {
 
     private static final int POSITION_DATE_OF_BIRTH=0;
     private static final int POSITION_ESTIMATED_DATE=1;
@@ -27,8 +25,6 @@ public class UserDetailsListAdapter extends RecyclerView.Adapter<RecyclerView.Vi
 
     private static final int LIST_ITEM_COUNT=5;
 
-    private static final int VIEWTYPE_NOT_CHILDREN=0;
-    private static final int VIEWTYPE_CHILDREN=1;
 
     private User mUser;
     private boolean isEditable;
@@ -51,50 +47,35 @@ public class UserDetailsListAdapter extends RecyclerView.Adapter<RecyclerView.Vi
         notifyDataSetChanged();
     }
 
-    @Override
-    public int getItemViewType(int position) {
-        if(position==POSITION_CHILDREN){
-            return VIEWTYPE_CHILDREN;
-        }
-        return VIEWTYPE_NOT_CHILDREN;
-    }
-
     @NonNull
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        switch (viewType){
-            case VIEWTYPE_CHILDREN:
-                return ViewHolderFactory.onCreateChildrenItemViewHolder(parent, this);
-            case VIEWTYPE_NOT_CHILDREN:
+    public TwoLineWithIconItemViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
                 return ViewHolderFactory.onCreateTwoLineWithIconViewHolder(parent, this);
-                default:
-                    throw new UnsupportedOperationException("Not yet implemented");
-        }
 
     }
 
     @Override
-    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull TwoLineWithIconItemViewHolder holder, int position) {
         switch (position){
             case POSITION_DATE_OF_BIRTH:
-                bindUserDateOfBirth((ViewHolderFactory.TwoLineWithIconItemViewHolder) holder);
+                bindUserDateOfBirth(holder);
                 break;
             case POSITION_ESTIMATED_DATE:
-                bindUserEstimatedDate((ViewHolderFactory.TwoLineWithIconItemViewHolder) holder);
+                bindUserEstimatedDate(holder);
                 break;
             case POSITION_CHILDREN:
-                bindUserChildren((ViewHolderFactory.ChildrenItemViewHolder) holder);
+                bindUserChildren(holder);
                 break;
             case POSITION_HOSPITAL:
-                bindUserHospital((ViewHolderFactory.TwoLineWithIconItemViewHolder) holder);
+                bindUserHospital(holder);
                 break;
             case POSITION_LOCATION:
-                bindUserLocation((ViewHolderFactory.TwoLineWithIconItemViewHolder) holder);
+                bindUserLocation(holder);
 
         }
     }
 
-    private void bindUserLocation(ViewHolderFactory.TwoLineWithIconItemViewHolder holder) {
+    private void bindUserLocation(TwoLineWithIconItemViewHolder holder) {
         holder.icon.setImageResource(R.drawable.ic_home_40dp);
         holder.bottomText.setText(R.string.user_info_title_location);
         final PlaceData userLocationPlaceData = mUser.getUserLocationPlaceData();
@@ -105,7 +86,7 @@ public class UserDetailsListAdapter extends RecyclerView.Adapter<RecyclerView.Vi
         }
     }
 
-    private void bindUserHospital(ViewHolderFactory.TwoLineWithIconItemViewHolder holder) {
+    private void bindUserHospital(TwoLineWithIconItemViewHolder holder) {
         final PlaceData hospitalPlaceData = mUser.getHospitalLocationPlaceData();
         if(hospitalPlaceData!=null){
             holder.topText.setText(hospitalPlaceData.getName());
@@ -117,12 +98,10 @@ public class UserDetailsListAdapter extends RecyclerView.Adapter<RecyclerView.Vi
 
     }
 
-    private void bindUserChildren(ViewHolderFactory.ChildrenItemViewHolder holder) {
-//        iconId=R.drawable.ic_child_friendly_black_24dp;
-//        bottomString=context.getString(R.string.user_info_title_children);
+    private void bindUserChildren(TwoLineWithIconItemViewHolder holder) {
+        Context context = holder.itemView.getContext();
         int boysCount=0;
         int girlsCount=0;
-        String initString = holder.itemView.getContext().getString(R.string.children_add);
         if(mUser.getChildren()!=null && mUser.getChildren().size()>0) {
             for (Map.Entry<String, Child> entry : mUser.getChildren().entrySet()) {
                 Child child = entry.getValue();
@@ -133,38 +112,27 @@ public class UserDetailsListAdapter extends RecyclerView.Adapter<RecyclerView.Vi
                 }
             }
         }
-        holder.boysCount.setText(
-                boysCount==0?initString:String.valueOf(boysCount)
-        );
-
-        holder.girlsCount.setText(
-                girlsCount==0?initString:String.valueOf(girlsCount)
-        );
-        if(isEditable && mUser.getChildren()!=null){
-            holder.childrenList.setVisibility(View.VISIBLE);
-            Context context = holder.itemView.getContext();
-            ChildrenListAdapter adapter = new ChildrenListAdapter(new ArrayList<>(mUser.getChildren().values()), this);
-            holder.childrenList.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false));
-            holder.childrenList.setAdapter(adapter);
-        } else {
-            holder.childrenList.setVisibility(View.GONE);
-        }
+        holder.icon.setImageResource(R.drawable.ic_child_friendly_black_24dp);
+        holder.bottomText.setText(R.string.user_info_title_children);
+        String boysString = boysCount==0?"": String.format(context.getString(R.string.user_info_boys_count_format), boysCount);
+        String girlsString = girlsCount==0?"": String.format(context.getString(R.string.user_info_girls_count_format), girlsCount);
+        holder.topText.setText(String.format("%s %s", boysString, girlsString));
     }
 
-    private void bindUserEstimatedDate(ViewHolderFactory.TwoLineWithIconItemViewHolder holder) {
+    private void bindUserEstimatedDate(TwoLineWithIconItemViewHolder holder) {
         holder.icon.setImageResource(R.drawable.ic_baseline_calendar_today_24px);
         holder.bottomText.setText(R.string.user_info_title_edd);
         holder.topText.setText(DateUtils.formatDateFromMillis(mUser.getEstimatedDateMillis()));
     }
 
-    private void bindUserDateOfBirth(ViewHolderFactory.TwoLineWithIconItemViewHolder holder) {
+    private void bindUserDateOfBirth(TwoLineWithIconItemViewHolder holder) {
         holder.icon.setImageResource(R.drawable.ic_baseline_calendar_today_24px);
         holder.bottomText.setText(R.string.user_info_title_date_of_birth);
         holder.topText.setText(DateUtils.formatDateFromMillis(mUser.getBirthDateMillis()));
     }
 
 
-    private void setTexts(ViewHolderFactory.TwoLineWithIconItemViewHolder holder, String textTop, String textBottom){
+    private void setTexts(TwoLineWithIconItemViewHolder holder, String textTop, String textBottom){
         if(textTop!=null){
             holder.topText.setText(textTop);
         }
@@ -211,11 +179,6 @@ public class UserDetailsListAdapter extends RecyclerView.Adapter<RecyclerView.Vi
     @Override
     public void onAddGirlClick() {
         mCallback.onAddChildClick(Child.SEX_FEMALE);
-    }
-
-    @Override
-    public void onChildClick(Child child) {
-
     }
 
     public interface UserDetailsCallback{

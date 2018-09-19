@@ -18,8 +18,6 @@ import android.view.ViewGroup;
 
 import com.akhris.pregnytalk.R;
 import com.akhris.pregnytalk.contract.ChatRoom;
-import com.google.android.gms.location.places.Place;
-import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 
 import java.util.List;
@@ -28,38 +26,31 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 /**
- * A simple {@link Fragment} subclass.
+ * Fragment containing View Pager layout with two tabs: Maps and List of chats that are
+ * currently displayed on a map.
  */
 public class MapAndListFragment extends NavigationFragment
         implements ImprovedMapFragment.ChatsOnMapCallback{
-
 
     @BindView(R.id.tl_maps_list_tabs) TabLayout mTabLayout;
     @BindView(R.id.vp_maps_list_pager) ViewPager mViewPager;
     @BindView(R.id.toolbar) Toolbar toolbar;
 
-    private PlacesSearchView searchView;
+    private PlacesSearchView mSearchView;
 
-//    private GoogleMap mMap;
+    // Currently callback is empty. It's needed two fire getMapAsync() function of ImprovedMapFragment.
+    private OnMapReadyCallback mapReadyCallback = googleMap -> { };
 
-
-    private OnMapReadyCallback mapReadyCallback = new OnMapReadyCallback() {
-        @Override
-        public void onMapReady(GoogleMap googleMap) {
-//            mMap = googleMap;
-//            mMap.setOnMapClickListener(this);
-            // Add a marker in Sydney and move the camera
-//            LatLng sydney = new LatLng(-34, 151);
-//            mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-//            mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
-        }
-    };
+    // Instance of View Pager adapter.
     private MyPagerAdapter mAdapter;
 
     public MapAndListFragment() {
         // Required empty public constructor
     }
 
+    /**
+     * View initialization: tabs are setup to operate with ViewPagers
+     */
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -74,11 +65,14 @@ public class MapAndListFragment extends NavigationFragment
         return rootview;
     }
 
+    /**
+     * Getting reference to custom PlacesSearchView inside menu.
+     */
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.menu_map, menu);
-        searchView = (PlacesSearchView) menu.findItem(R.id.action_search)
+        mSearchView = (PlacesSearchView) menu.findItem(R.id.action_search)
                 .getActionView();
         setUpSearchView();
     }
@@ -92,13 +86,23 @@ public class MapAndListFragment extends NavigationFragment
         return (ImprovedMapFragment)mAdapter.instantiateItem(mViewPager, MyPagerAdapter.PAGE_INDEX_MAPS);
     }
 
+    /**
+     * Binding ImprovedMapFragment and PlacesSearchView that placed in the menu.
+     */
     private void setUpSearchView(){
-        if(searchView!=null && mAdapter!=null){
+        if(mSearchView !=null && mAdapter!=null){
             getMapFragment()
-                    .withPlacesSearchView(searchView);
+                    .withPlacesSearchView(mSearchView);
         }
     }
 
+    /**
+     * Method of ImprovedMapFragment.ChatsOnMapCallback, called after User moves the map and
+     * ImprovedMapFragment does all the work of querying all currently visible chatrooms from
+     * the Firebase Database.
+     * The list then send to RecyclerView's adapter inside ChatLocationListFragment.
+     * @param chatRooms - List of currently visible chatrooms on the map.
+     */
     @Override
     public void onCameraMoved(List<ChatRoom> chatRooms) {
         ((ChatLocationListFragment)
@@ -110,12 +114,16 @@ public class MapAndListFragment extends NavigationFragment
                         getString(R.string.viewpager_title_list_format),
                         chatRooms.size()
                 );
-        mTabLayout
-                .getTabAt(MyPagerAdapter.PAGE_INDEX_LIST)
-                .setText(pageTitle);
+        TabLayout.Tab tab = mTabLayout.getTabAt(MyPagerAdapter.PAGE_INDEX_LIST);
+        if(tab!=null) {
+                tab.setText(pageTitle);
+        }
     }
 
 
+    /**
+     * Simple class of View Pager adapter
+     */
     private class MyPagerAdapter extends FragmentStatePagerAdapter {
         static final int PAGE_INDEX_MAPS = 0;
         static final int PAGE_INDEX_LIST = 1;

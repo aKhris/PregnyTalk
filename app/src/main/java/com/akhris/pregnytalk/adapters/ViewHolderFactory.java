@@ -2,16 +2,13 @@ package com.akhris.pregnytalk.adapters;
 
 import android.animation.AnimatorInflater;
 import android.animation.AnimatorSet;
-import android.animation.ObjectAnimator;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AnimationSet;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -66,6 +63,12 @@ public class ViewHolderFactory {
         );
     }
 
+    public static ChildViewHolder onCreateChildViewHolder(@NonNull ViewGroup parent, ItemClickListener itemClickListener) {
+        return new ChildViewHolder(
+                LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.children_list_item, parent, false), itemClickListener);
+    }
+
     public static class TwoLineWithIconItemViewHolder extends RecyclerView.ViewHolder{
         @BindView(R.id.tv_two_line_item_item_text_top) TextView topText;
         @BindView(R.id.tv_two_line_item_text_bottom) TextView bottomText;
@@ -85,7 +88,7 @@ public class ViewHolderFactory {
         @BindView(R.id.iv_babygirl) ImageView babyGirlIcon;
         @BindView(R.id.rv_children_list) RecyclerView childrenList;
 
-        public ChildrenItemViewHolder(View itemView, final ChildrenClickListener childrenClickListener) {
+        ChildrenItemViewHolder(View itemView, final ChildrenClickListener childrenClickListener) {
             super(itemView);
             ButterKnife.bind(this, itemView);
             babyBoyIcon.setOnClickListener(v->childrenClickListener.onAddBoyClick());
@@ -149,8 +152,23 @@ public class ViewHolderFactory {
             sendMessage.setOnClickListener(v->contactsItemClickListener.onSendMessageClick(getAdapterPosition()));
         }
     }
+
+    public static class ChildViewHolder extends WithBackgroundHolder{
+
+        @BindView(R.id.tv_two_line_item_item_text_top) TextView topText;
+        @BindView(R.id.tv_two_line_item_text_bottom) TextView bottomText;
+        @BindView(R.id.iv_two_line_item_icon) ImageView icon;
+
+        ChildViewHolder(View itemView, final ItemClickListener itemClickListener) {
+            super(itemView);
+            ButterKnife.bind(this, itemView);
+            itemView.setOnClickListener(v -> itemClickListener.onItemClick(getAdapterPosition()));
+        }
+    }
     
     public static class WithBackgroundHolder extends RecyclerView.ViewHolder{
+
+        public boolean wasSwiped = false;
 
         public ViewGroup foreground;
 
@@ -167,6 +185,11 @@ public class ViewHolderFactory {
                     (AnimatorSet) AnimatorInflater.loadAnimator(itemView.getContext(), R.animator.foreground_bounce);
             bounceAnimator.setTarget(foreground);
             bounceAnimator.start();
+        }
+
+        public void releaseSwiped(){
+            wasSwiped = false;
+            foreground.animate().translationX(0f).start();
         }
     }
 }

@@ -9,6 +9,7 @@ import com.akhris.pregnytalk.MainActivity;
 import com.akhris.pregnytalk.R;
 import com.akhris.pregnytalk.contract.User;
 import com.akhris.pregnytalk.utils.ImageUtils;
+import com.akhris.pregnytalk.utils.SharedPrefUtils;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -18,7 +19,7 @@ public class ContactsListAdapter extends RecyclerView.Adapter<ViewHolderFactory.
 
     private List<User> mContacts;
     private ContactsItemClickListener mContactsItemClickListener;
-    private boolean mWasBounced=false;
+    private boolean wasBouncedAfterAdapterCreation=false;
 
     public ContactsListAdapter(ContactsItemClickListener mContactsItemClickListener) {
         this.mContactsItemClickListener = mContactsItemClickListener;
@@ -49,9 +50,9 @@ public class ContactsListAdapter extends RecyclerView.Adapter<ViewHolderFactory.
             holder.sendMessage.setVisibility(View.VISIBLE);
         }
 
-        if(!mWasBounced){
+        if(!SharedPrefUtils.wasBounced(holder.itemView.getContext(), this.getClass()) && !wasBouncedAfterAdapterCreation){
             holder.bounce();
-            mWasBounced = true;
+            wasBouncedAfterAdapterCreation = true;
         }
     }
 

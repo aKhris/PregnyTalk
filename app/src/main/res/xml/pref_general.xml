@@ -2,21 +2,21 @@
 
 
     <PreferenceCategory
-        android:title="Category 1">
-        <SwitchPreference
-            android:defaultValue="false"
-            android:key="permanent_notification_switch"
-            android:summary="Summary 1"
-            android:title="Title 1" />
+        android:title="@string/pref_category_ui_hints_title">
+        <Preference
+            android:key="@string/pref_key_ui_hints_reset"
+            android:summary="@string/pref_ui_hints_summary"
+            android:title="@string/pref_ui_hints_title" />
 
     </PreferenceCategory>
+
     <PreferenceCategory
-        android:title="Category 2"
+        android:title="@string/pref_category_auth_title"
         >
         <Preference
-            android:key="key_logout"
-            android:title="Logout"
-            android:summary="Summary 2"
+            android:key="@string/pref_key_logout"
+            android:title="@string/pref_logout_title"
+            android:summary="@string/pref_logout_summary"
             />
     </PreferenceCategory>
 </PreferenceScreen>

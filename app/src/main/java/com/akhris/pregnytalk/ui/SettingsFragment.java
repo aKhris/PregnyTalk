@@ -8,14 +8,13 @@ import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceFragmentCompat;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.Toast;
 
-import com.akhris.pregnytalk.MainActivity;
 import com.akhris.pregnytalk.R;
+import com.akhris.pregnytalk.utils.SharedPrefUtils;
 import com.firebase.ui.auth.AuthUI;
 
-import butterknife.BindView;
-
-public class SettingsFragment extends PreferenceFragmentCompat {
+public class SettingsFragment extends PreferenceFragmentCompat implements Preference.OnPreferenceClickListener {
 
     private Toolbar toolbar;
 
@@ -36,10 +35,10 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         super.onViewCreated(view, savedInstanceState);
         toolbar = view.findViewById(R.id.toolbar);
         toolbar.setTitle(R.string.toolbar_title_settingsfragment);
-        getPreferenceScreen().findPreference("key_logout").setOnPreferenceClickListener(preference -> {
-            AuthUI.getInstance().signOut(getContext());
-            return true;
-        });
+        getPreferenceScreen().findPreference(getString(R.string.pref_key_logout))
+                .setOnPreferenceClickListener(this);
+        getPreferenceScreen().findPreference(getString(R.string.pref_key_ui_hints_reset))
+                .setOnPreferenceClickListener(this);
 
     }
 
@@ -58,5 +57,24 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     public void onPause() {
         super.onPause();
         callbacks.unbindToolbar();
+    }
+
+    @Override
+    public boolean onPreferenceClick(Preference preference) {
+        String key = preference.getKey();
+        if(key.equals(getString(R.string.pref_key_logout))){
+                AuthUI.getInstance().signOut(getContext());
+                return true;
+        }
+        else if (key.equals(getString(R.string.pref_key_ui_hints_reset))){
+            SharedPrefUtils.resetHelpers(getContext());
+            notifyUser(getString(R.string.settings_hints_reset_message));
+            return true;
+        }
+        return false;
+    }
+
+    private void notifyUser(String text) {
+        Toast.makeText(getContext(), text, Toast.LENGTH_SHORT).show();
     }
 }

@@ -15,15 +15,25 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
+/**
+ * Activity representing Google Map with a SearchView above and a button to confirm selected place
+ * under the map.
+ * Used to choose user's home or hospital location, or while creating new chat.
+ * Contains ImprovedMapFragment as a main Map part.
+ */
 public class MapSearchActivity extends AppCompatActivity
         implements OnMapReadyCallback,
         ImprovedMapFragment.MapCallback{
 
     @BindView(R.id.psv_map_search) PlacesSearchView searchView;
     @BindView(R.id.b_choose_place) Button bChoosePlace;
+
+    private final static int VERTICAL_PADDING=150;
+
     ImprovedMapFragment improvedMapFragment;
 
 
+    // Extra data that can be passed in starting intent
     public static final String EXTRA_PLACE_DATA = "place_data";
     public static final String EXTRA_ICON_ID = "icon_id";
     private PlaceData mPlaceData;
@@ -41,7 +51,8 @@ public class MapSearchActivity extends AppCompatActivity
                 .beginTransaction()
                 .replace(R.id.fl_map_fragment_container, improvedMapFragment, ImprovedMapFragment.class.getSimpleName())
                 .commit();
-        improvedMapFragment.setVerticalPadding(150);
+        // set padding - to make on-the-map UI not obscured under top toolbar and the bottom button.
+        improvedMapFragment.setVerticalPadding(VERTICAL_PADDING);
         improvedMapFragment.getMapAsync(this);
         improvedMapFragment.withPlacesSearchView(searchView);
         if(getIntent()!=null && getIntent().hasExtra(EXTRA_ICON_ID)){
@@ -50,6 +61,9 @@ public class MapSearchActivity extends AppCompatActivity
 
     }
 
+    /**
+     * If activity was called with some PlaceData - show marker of that place and zoom there.
+     */
     @Override
     public void onMapReady(GoogleMap googleMap) {
         if(getIntent()!=null){
@@ -67,6 +81,10 @@ public class MapSearchActivity extends AppCompatActivity
         }
     }
 
+    /**
+     * Called when button is clicked.
+     * The PlaceData instance is returned in the starting intent.
+     */
     @OnClick(R.id.b_choose_place)
     public void onChoosePlaceClick(){
         getIntent().putExtra(EXTRA_PLACE_DATA, mPlaceData);
@@ -74,12 +92,17 @@ public class MapSearchActivity extends AppCompatActivity
         finish();
     }
 
+    /**
+     * Updating PlaceData instance with data of the place the user clicked in on a map.
+     */
     private void updatePlaceData(Place place){
         LatLng latLng = place.getLatLng();
         mPlaceData = new PlaceData(latLng.latitude, latLng.longitude, place.getName().toString());
     }
 
-
+    /**
+     * ImprovedMapFragment callback that returns Place object when user clicks on a map.
+     */
     @Override
     public void onMapClick(Place place) {
         updatePlaceData(place);

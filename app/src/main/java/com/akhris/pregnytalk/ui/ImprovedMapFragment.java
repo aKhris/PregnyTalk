@@ -3,15 +3,11 @@ package com.akhris.pregnytalk.ui;
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.Loader;
-import android.support.v4.content.res.ResourcesCompat;
-import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.widget.TextView;
@@ -32,7 +28,6 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
@@ -41,7 +36,6 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
@@ -169,16 +163,12 @@ public class ImprovedMapFragment extends SupportMapFragment
      */
     private void setupChatRoomsReference() {
         mRoomMetaDataReference =
-                FirebaseDatabase
-                        .getInstance()
-                .getReference()
-                .child(FirebaseContract.CHILD_ROOM_META_DATA);
+                FirebaseContract.getRoomsMetaDataReference();
     }
 
     /**
      * Binding outer PlacesSearchView instance to use with this map.
      * Setting callback makes possible to
-     * @param placesSearchView
      */
     public void withPlacesSearchView(PlacesSearchView placesSearchView){
         this.mPlacesSearchView = placesSearchView;
@@ -283,6 +273,8 @@ public class ImprovedMapFragment extends SupportMapFragment
                         .snippet(snippet)
         );
 
+        mMarker.showInfoWindow();
+
         if(zoomTo){
             zoomToLocation(latLng);
         }
@@ -353,6 +345,7 @@ public class ImprovedMapFragment extends SupportMapFragment
      *          false if not
      */
     private boolean isMeInChatRoom(ChatRoom chatRoom){
+        //noinspection SimplifiableIfStatement
         if(chatRoom.getUsersMap()==null){return false;}
         return chatRoom.getUsersMap().containsKey(MainActivity.sMyUid);
     }
@@ -494,8 +487,13 @@ public class ImprovedMapFragment extends SupportMapFragment
 
     @Override public View getInfoWindow(Marker marker) { return null; }
 
+    /**
+     * Creating info window that shows when user clicks on a marker
+     * @param marker - Marker that user clicks on
+     */
     @Override
     public View getInfoContents(Marker marker) {
+        //noinspection UnusedAssignment
         View infoWindow = null;
         if(mChatMarkerMap.containsKey(marker)){
             //inflate info window for chat markers
@@ -509,7 +507,7 @@ public class ImprovedMapFragment extends SupportMapFragment
             ChatRoom chatRoom = mChatMarkerMap.get(marker);
 
             if(isMeInChatRoom(chatRoom)){
-                joinChat.setText("");
+                joinChat.setText("");   //.setVisibility(View.INVISIBLE) is not working here
             }
 
             title.setText(chatRoom.getName());
@@ -538,15 +536,17 @@ public class ImprovedMapFragment extends SupportMapFragment
             }
 
         }
-        // Inflate the layouts for the info window, title and snippet.
-
-
-
         return infoWindow;
     }
 
+    /**
+     * Handling clicking on a ChatRoom info window.
+     * If User is not in the chatroom - show AlertDialog that asks for confirmation
+     * @param chatRoom ChatRoom that corresponds to clicked Marker
+     */
     private void onChatInfoWindowClick(ChatRoom chatRoom) {
         if(MainActivity.sMe==null){return;}
+        if(getContext()==null){return;}
         if(!isMeInChatRoom(chatRoom)) {
             //User is going to get into the room
             AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
@@ -554,11 +554,17 @@ public class ImprovedMapFragment extends SupportMapFragment
                     .setMessage(chatRoom.getName())
                     .setPositiveButton(R.string.chat_join_dialog_positive_button, (dialog, which) -> {
                         addUserToChatRoom(chatRoom);
+                        // Force reload chats visible on a map just like user moved the camera
+                        onCameraIdle();
                     });
             builder.create().show();
         }
     }
 
+    /**
+     * Adding User to chatroom when User confirms that operation
+     * @param chatRoom - chatroom to add user.
+     */
     private void addUserToChatRoom(ChatRoom chatRoom) {
 
         mRoomMetaDataReference
@@ -568,17 +574,34 @@ public class ImprovedMapFragment extends SupportMapFragment
                 .setValue(MainActivity.sMe.getName());
     }
 
+    /**
+     * Handling clicking on the info window
+     * @param marker - marker that user clicks to show the info window
+     */
     @Override
     public void onInfoWindowClick(Marker marker) {
         if(mChatMarkerMap.containsKey(marker)){
+            // Clicked marker is of a chat type of markers
+            // If user is not in the chat, user maybe want to get in
             onChatInfoWindowClick(mChatMarkerMap.get(marker));
+
         } else {
+            // Clicked marker is just a marker of some place
             if(mShowChatMarkers) {
+                // If this map is showing chats - create chatroom here
                 onCreateNewChatInfoWindowClick(marker);
             }
+            // If this map is not showing chats
+            // (i.e. map is called from User Info Activity - to show Home or Hospital locations)
+            // then do nothing - user is not supposed to add a chat here
         }
+        marker.hideInfoWindow();
     }
 
+    /**
+     * Called when user clicks on info window to start a new chat here
+     * @param marker - marker that user clicked on to show info window
+     */
     private void onCreateNewChatInfoWindowClick(Marker marker) {
         ChatRoom chatRoom = new ChatRoom();
         chatRoom.setName(marker.getTitle());
@@ -587,16 +610,19 @@ public class ImprovedMapFragment extends SupportMapFragment
         CreateChatFragment
                 .newInstance(chatRoom)
                 .show(getChildFragmentManager(), CreateChatFragment.class.getSimpleName());
+        marker.remove();
     }
 
     /**
      * Callback for CreateChatFragment.
      * Called when user clicks on info window of a not-chat-marker
-     * @param chatRoom
+     * @param chatRoom - ChatRoom object with filled in Location and Name parameters
      */
     @Override
     public void onNewChatroomAdded(ChatRoom chatRoom) {
-
+        mRoomMetaDataReference.push().setValue(chatRoom);
+        // Force reload chats visible on a map just like user moved the camera
+        onCameraIdle();
     }
 
     public interface MapCallback{

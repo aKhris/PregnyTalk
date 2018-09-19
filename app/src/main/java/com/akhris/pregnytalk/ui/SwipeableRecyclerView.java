@@ -11,6 +11,7 @@ import android.view.View;
 import com.akhris.pregnytalk.adapters.ViewHolderFactory;
 
 public class SwipeableRecyclerView extends RecyclerView {
+
     public SwipeableRecyclerView(Context context) {
         super(context);
     }
@@ -22,7 +23,6 @@ public class SwipeableRecyclerView extends RecyclerView {
     public SwipeableRecyclerView(Context context, @Nullable AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
     }
-
 
     public void initSwiping(SwipeCallbacks swipeCallbacks){
         RecyclerItemTouchHelperCallback itemTouchHelperCallback =
@@ -47,6 +47,9 @@ public class SwipeableRecyclerView extends RecyclerView {
         @Override
         public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
             mCallbacks.onSwiped(viewHolder, direction);
+            if(viewHolder instanceof ViewHolderFactory.WithBackgroundHolder){
+                ((ViewHolderFactory.WithBackgroundHolder) viewHolder).wasSwiped = true;
+            }
         }
 
         @Override

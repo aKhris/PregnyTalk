@@ -14,7 +14,12 @@ import com.akhris.pregnytalk.adapters.PlacesSuggestionsAdapter;
 import com.google.android.gms.location.places.GeoDataClient;
 import com.google.android.gms.location.places.Places;
 
-public class PlacesSearchView extends SearchView implements SearchView.OnQueryTextListener, SearchView.OnSuggestionListener {
+/**
+ * Customized SearchView that listens to user's input and makes suggestions of places
+ * using Places API
+ */
+public class PlacesSearchView extends SearchView
+        implements SearchView.OnQueryTextListener, SearchView.OnSuggestionListener {
 
     private GeoDataClient mGeoDataClient;
     private Callback mCallback;
@@ -42,9 +47,7 @@ public class PlacesSearchView extends SearchView implements SearchView.OnQueryTe
         this.mCallback = mCallback;
     }
 
-    /**
-     * https://stackoverflow.com/a/42295346/7635275
-     */
+
     private void initSearch(){
         mGeoDataClient = Places.getGeoDataClient(getContext());
         setOnQueryTextListener(this);
@@ -67,6 +70,10 @@ public class PlacesSearchView extends SearchView implements SearchView.OnQueryTe
         return false;
     }
 
+    /**
+     * When user changes text in search window create new PlacesSuggestionsAdapter
+     * and attach it to PlacesSearchView;
+     */
     @Override
     public boolean onQueryTextChange(String newText) {
         mGeoDataClient
@@ -81,6 +88,12 @@ public class PlacesSearchView extends SearchView implements SearchView.OnQueryTe
         return false;
     }
 
+    /**
+     * Called when user clicks on suggestion.
+     * Checking if user clicks not on the "Powered By Google" image and then got the name of the Place
+     * and its ID from the adapter.
+     * Name is using to set in the search window, Place ID - returns in the callback.
+     */
     @Override
     public boolean onSuggestionClick(int position) {
         Cursor cursor = getSuggestionsAdapter().getCursor();
@@ -96,13 +109,15 @@ public class PlacesSearchView extends SearchView implements SearchView.OnQueryTe
     }
 
     /**
+     * Hiding keyboard when user click on a suggestion.
+     * Got here:
      * https://stackoverflow.com/a/17789187/7635275
-     * @param context
-     * @param view
      */
     public static void hideKeyboardFrom(Context context, View view) {
         InputMethodManager imm = (InputMethodManager) context.getSystemService(Activity.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        if(imm!=null) {
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
     }
 
     public interface Callback{

@@ -1,13 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout
-    android:id="@+id/cl_user_info_parent"
+<android.support.design.widget.CoordinatorLayout android:id="@+id/cl_user_info_parent"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:fitsSystemWindows="true"
-    >
+    android:fitsSystemWindows="true">
 
         <android.support.design.widget.AppBarLayout
             android:layout_width="match_parent"
@@ -77,12 +74,26 @@
            app:layout_behavior="@string/appbar_scrolling_view_behavior"
            >
 
-           <android.support.v7.widget.RecyclerView
-               android:id="@+id/rv_user_info_details_list"
+           <LinearLayout
                android:layout_width="match_parent"
-               android:layout_height="wrap_content"
+               android:layout_height="match_parent"
+               android:orientation="vertical"
+               >
 
-               />
+               <android.support.v7.widget.RecyclerView
+                   android:id="@+id/rv_user_info_details_list"
+                   android:layout_width="match_parent"
+                   android:layout_height="wrap_content"
+
+                   />
+
+               <com.akhris.pregnytalk.ui.SwipeableRecyclerView
+                   android:id="@+id/rv_user_info_children_list"
+                   android:layout_width="match_parent"
+                   android:layout_height="wrap_content"/>
+
+           </LinearLayout>
+
 
        </android.support.v4.widget.NestedScrollView>
 

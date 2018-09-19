@@ -137,18 +137,7 @@ public class ChatsListFragment extends NavigationFragment
      */
     @Override
     public void onNewChatroomAdded(ChatRoom chatRoom) {
-        String addedChatroomId = mRoomMetaDataReference.push().getKey();
-        if(addedChatroomId==null){return;}
-
-        mRoomMetaDataReference
-                .child(addedChatroomId)
-                .setValue(chatRoom);
-
-        mRoomMetaDataReference
-                .child(addedChatroomId)
-                .child(FirebaseContract.CHILD_ROOM_USERS_MAP)
-                .child(MainActivity.sMyUid)
-                .setValue(MainActivity.sMe.getName());
+        mRoomMetaDataReference.push().setValue(chatRoom);
     }
 
     /**
@@ -260,14 +249,17 @@ public class ChatsListFragment extends NavigationFragment
         int position = viewHolder.getAdapterPosition();
         String id = mAdapter.getChatRoomId(position);
         ChatRoom chatRoom = mAdapter.getChatRoom(position);
-        mAdapter.removeChatRoom(chatRoom);
+        mAdapter.removeChatRoom(position);
         String deleteString = String.format(getString(R.string.chatroom_deleted_snackbar_text), chatRoom.getName());
         Snackbar deleteChatRoomBar = Snackbar.make(mChatsList, deleteString, Snackbar.LENGTH_LONG);
-        deleteChatRoomBar.setAction(R.string.snackbar_undo, v -> mAdapter.addChatRoom(chatRoom));
+        deleteChatRoomBar.setAction(R.string.snackbar_undo, v -> {
+                    mAdapter.addChatRoom(chatRoom);
+                }
+            );
         deleteChatRoomBar.addCallback(new BaseTransientBottomBar.BaseCallback<Snackbar>() {
             @Override
             public void onDismissed(Snackbar transientBottomBar, int event) {
-                if(event==DISMISS_EVENT_ACTION){return;}
+                if(event==DISMISS_EVENT_ACTION){ return; }
                 mRoomMetaDataReference
                 .child(id)
                 .child(FirebaseContract.CHILD_ROOM_USERS_MAP)

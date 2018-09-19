@@ -103,8 +103,40 @@ public class ChatRoom implements Serializable, Comparable<ChatRoom>{
 
     @Override
     public int compareTo(@NonNull ChatRoom o) {
-        if (o.getLastMessage()==null || this.getLastMessage()==null){return -1;}
-        return (int)(o.getLastMessage().getTimeStamp()-this.getLastMessage().getTimeStamp());
+        int cmp=0;
+
+        if(this.getLastMessage()!=null && o.getLastMessage()!=null){
+            cmp = (int)(o.getLastMessage().getTimeStamp()
+                    -this.getLastMessage().getTimeStamp());
+        }
+        if(cmp!=0){return cmp;}
+
+        if(this.getLastMessage()==null && o.getLastMessage()!=null && this.getCreatedAt()!=null){
+            cmp = (int)(o.getLastMessage().getTimeStamp()- this.getCreatedAt());
+        }
+        if(cmp!=0){return cmp;}
+
+        if(this.getLastMessage()!=null && o.getLastMessage()==null && o.getCreatedAt()!=null){
+            cmp = (int)(o.getCreatedAt() - this.getLastMessage().getTimeStamp());
+        }
+        if(cmp!=0){return cmp;}
+
+
+        if(this.getCreatedAt()!=null && o.getCreatedAt()!=null){
+            cmp = (int)(o.getCreatedAt()-this.getCreatedAt());
+        }
+        if(cmp!=0){return cmp;}
+
+        if(this.getName()!=null && o.getName()!=null){
+            cmp = o.getName().compareTo(this.getName());
+        }
+        if(cmp!=0){return cmp;}
+
+        if(this.getChatRoomId()!=null && o.getChatRoomId()!=null){
+            cmp = o.getChatRoomId().compareTo(this.getChatRoomId());
+        }
+
+        return cmp;
     }
 
     @Override

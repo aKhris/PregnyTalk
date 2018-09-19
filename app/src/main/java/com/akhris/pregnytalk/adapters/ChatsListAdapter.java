@@ -1,67 +1,72 @@
 package com.akhris.pregnytalk.adapters;
 
-import android.animation.Animator;
 import android.support.annotation.NonNull;
-import android.support.v7.util.DiffUtil;
+import android.support.v7.util.SortedList;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.helper.ItemTouchHelper;
+import android.support.v7.widget.util.SortedListAdapterCallback;
 import android.view.ViewGroup;
 
 import com.akhris.pregnytalk.R;
 import com.akhris.pregnytalk.contract.ChatRoom;
 import com.akhris.pregnytalk.utils.DateUtils;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import com.akhris.pregnytalk.utils.SharedPrefUtils;
 
 public class ChatsListAdapter extends RecyclerView.Adapter<ViewHolderFactory.ChatsListItemHolder>{
 
-    private List<ChatRoom> chatRooms;
+    private SortedList<ChatRoom> mChatRooms;
     private ItemClickListener itemClickListener;
-    private boolean mWasBounced=false;
+    private boolean wasBouncedAfterAdapterCreation=false;
+
+    private SortedListAdapterCallback<ChatRoom> mSortedListCallback = new SortedListAdapterCallback<ChatRoom>(this) {
+        @Override
+        public int compare(ChatRoom o1, ChatRoom o2) {
+            return o1.compareTo(o2);
+        }
+
+        @Override
+        public boolean areContentsTheSame(ChatRoom oldRoom, ChatRoom newRoom) {
+            if(newRoom.getLastMessage()==null || oldRoom.getLastMessage()==null){return false;}
+            return oldRoom.getName().equals(newRoom.getName())
+                    && oldRoom.getLastMessage().equals(newRoom.getLastMessage());
+        }
+
+        @Override
+        public boolean areItemsTheSame(ChatRoom item1, ChatRoom item2) {
+            return item1.getChatRoomId().equals(item2.getChatRoomId());
+        }
+    };
 
     public ChatsListAdapter(ItemClickListener clickListener){
-        chatRooms = new ArrayList<>();
+        mChatRooms = new SortedList<>(ChatRoom.class, mSortedListCallback);
         this.itemClickListener = clickListener;
     }
 
     public void addChatRoom(ChatRoom chatRoom){
         if(chatRoom==null){return;}
-        List<ChatRoom> newList = new ArrayList<>(chatRooms);
-        newList.add(chatRoom);
-        updateList(newList);
+        mChatRooms.add(chatRoom);
     }
+
 
     public void removeChatRoom(ChatRoom chatRoom) {
         if(chatRoom==null){return;}
-        List<ChatRoom> newList = new ArrayList<>(chatRooms);
-        newList.remove(chatRoom);
-        updateList(newList);
+        mChatRooms.remove(chatRoom);
+    }
+
+    public void removeChatRoom(int position){
+        mChatRooms.removeItemAt(position);
     }
 
     public void updateChatRoom(ChatRoom chatRoom) {
         if(chatRoom==null){return;}
-        List<ChatRoom> newList = new ArrayList<>(chatRooms);
-        int index = newList.indexOf(chatRoom);
-        if(index==-1){return;}
-        newList.set(index, chatRoom);
-        updateList(newList);
-    }
-
-    private void updateList(List<ChatRoom> newList){
-        DiffUtil.DiffResult result = DiffUtil.calculateDiff(new ChatsListCallback(chatRooms, newList), true);
-        chatRooms.clear();
-        chatRooms.addAll(newList);
-        result.dispatchUpdatesTo(this);
+        mChatRooms.updateItemAt(mChatRooms.indexOf(chatRoom), chatRoom);
     }
 
     public ChatRoom getChatRoom(int position){
-        return chatRooms.get(position);
+        return mChatRooms.get(position);
     }
 
     public String getChatRoomId(int position){
-        return chatRooms.get(position).getChatRoomId();
+        return mChatRooms.get(position).getChatRoomId();
     }
 
     @NonNull
@@ -72,7 +77,7 @@ public class ChatsListAdapter extends RecyclerView.Adapter<ViewHolderFactory.Cha
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolderFactory.ChatsListItemHolder holder, int position) {
-        ChatRoom chatRoom = chatRooms.get(position);
+        ChatRoom chatRoom = mChatRooms.get(position);
         holder.chatName.setText(chatRoom.getName());
         if(chatRoom.getLastMessage()!=null){
             holder.chatLastMessageText.setText(chatRoom.getLastMessage().getMessage());
@@ -83,58 +88,23 @@ public class ChatsListAdapter extends RecyclerView.Adapter<ViewHolderFactory.Cha
             holder.chatTimeStamp.setText(DateUtils.formatTimeFromMillis(chatRoom.getCreatedAt()));
         }
 
-        if(!mWasBounced) {
+        if(!SharedPrefUtils.wasBounced(holder.itemView.getContext(), this.getClass()) && !wasBouncedAfterAdapterCreation){
             holder.bounce();
-            mWasBounced = true;
+            wasBouncedAfterAdapterCreation = true;
+        }
+        if(holder.wasSwiped){
+            holder.releaseSwiped();
+
         }
     }
 
     @Override
     public int getItemCount() {
-        return chatRooms.size();
+        return mChatRooms.size();
     }
 
     public void clear() {
-        chatRooms.clear();
-        notifyDataSetChanged();
+        mChatRooms.clear();
     }
 
-
-    class ChatsListCallback extends DiffUtil.Callback{
-
-        private List<ChatRoom> oldList;
-        private List<ChatRoom> newList;
-
-        ChatsListCallback(List<ChatRoom> oldList, List<ChatRoom> newList) {
-            this.oldList = oldList;
-            this.newList = newList;
-            Collections.sort(this.newList);
-        }
-
-        @Override
-        public int getOldListSize() {
-            return oldList.size();
-        }
-
-        @Override
-        public int getNewListSize() {
-            return newList.size();
-        }
-
-        @Override
-        public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
-            ChatRoom oldRoom = oldList.get(oldItemPosition);
-            ChatRoom newRoom = newList.get(newItemPosition);
-            return oldRoom.getChatRoomId().equals(newRoom.getChatRoomId());
-        }
-
-        @Override
-        public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
-            ChatRoom oldRoom = oldList.get(oldItemPosition);
-            ChatRoom newRoom = newList.get(newItemPosition);
-            if(newRoom.getLastMessage()==null || oldRoom.getLastMessage()==null){return false;}
-            return oldRoom.getName().equals(newRoom.getName())
-                    && oldRoom.getLastMessage().equals(newRoom.getLastMessage());
-        }
-    }
 }

@@ -1,28 +1,23 @@
 package com.akhris.pregnytalk.adapters;
 
-import android.content.Context;
-import android.support.annotation.ColorRes;
+import android.graphics.PorterDuff;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
-import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import com.akhris.pregnytalk.R;
 import com.akhris.pregnytalk.contract.Child;
 import com.akhris.pregnytalk.utils.DateUtils;
+import com.akhris.pregnytalk.utils.SharedPrefUtils;
 
 import java.util.List;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-
-public class ChildrenListAdapter extends RecyclerView.Adapter<ChildrenListAdapter.ChildHolder>{
+public class ChildrenListAdapter extends RecyclerView.Adapter<ViewHolderFactory.ChildViewHolder> implements ItemClickListener {
 
     private List<Child> mChildren;
     private ChildCallback mChildCallback;
+    private boolean wasBouncedAfterAdapterCreation=false;
 
     public ChildrenListAdapter(List<Child> mChildren, ChildCallback mChildCallback) {
         this.mChildren = mChildren;
@@ -31,22 +26,25 @@ public class ChildrenListAdapter extends RecyclerView.Adapter<ChildrenListAdapte
 
     @NonNull
     @Override
-    public ChildHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new ChildHolder(LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.children_list_item, parent, false));
+    public ViewHolderFactory.ChildViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        return ViewHolderFactory.onCreateChildViewHolder(parent, this);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ChildHolder holder, int position) {
-        holder.position.setText(String.valueOf(position+1));
+    public void onBindViewHolder(@NonNull ViewHolderFactory.ChildViewHolder holder, int position) {
         Child child = mChildren.get(position);
-        holder.name.setText(child.getName());
-        holder.dateOfBirth.setText(DateUtils.formatDateFromMillis(child.getBirthDateMillis()));
-        holder.setItemColor(
+        holder.topText.setText(child.getName());
+        holder.bottomText.setText(DateUtils.formatDateFromMillis(child.getBirthDateMillis()));
+        holder.icon.setImageResource(R.drawable.ic_child_friendly_black_24dp);
+        int color = ContextCompat.getColor(holder.itemView.getContext(),
                 child.getSex().equals(Child.SEX_FEMALE)?
-                        R.color.babyGirl:
-                        R.color.babyBoy
-        );
+                R.color.babyGirl:
+                R.color.babyBoy);
+        holder.icon.setColorFilter(color, PorterDuff.Mode.SRC_IN);
+        if(!SharedPrefUtils.wasBounced(holder.itemView.getContext(), this.getClass()) && !wasBouncedAfterAdapterCreation){
+            holder.bounce();
+            wasBouncedAfterAdapterCreation = true;
+        }
     }
 
     @Override
@@ -54,24 +52,13 @@ public class ChildrenListAdapter extends RecyclerView.Adapter<ChildrenListAdapte
         return mChildren.size();
     }
 
+    @Override
+    public void onItemClick(int position) {
+        mChildCallback.onChildClick(mChildren.get(position));
+    }
 
-    class ChildHolder extends ViewHolderFactory.WithBackgroundHolder{
-        @BindView(R.id.tv_children_list_position) TextView position;
-        @BindView(R.id.tv_children_list_name) TextView name;
-        @BindView(R.id.tv_children_list_date_of_birth) TextView dateOfBirth;
-
-        public ChildHolder(View itemView) {
-            super(itemView);
-            ButterKnife.bind(this, itemView);
-            itemView.setOnClickListener(v->mChildCallback.onChildClick(mChildren.get(getAdapterPosition())));
-        }
-
-        void setItemColor(@ColorRes int colorResId){
-            int color = ContextCompat.getColor(itemView.getContext(), colorResId);
-            this.position.setTextColor(color);
-            this.name.setTextColor(color);
-            this.dateOfBirth.setTextColor(color);
-        }
+    public Child getChild(int position) {
+        return mChildren.get(position);
     }
 
     public interface ChildCallback{

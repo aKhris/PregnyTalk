@@ -79,4 +79,15 @@
     <string name="snackbar_undo">undo</string>
     <string name="warning_check_internet">Please check internet connection!</string>
     <string name="marker_info_click_to_create">Click to create new chat here</string>
+    <string name="user_info_boys_count_format">Boys: %d</string>
+    <string name="user_info_girls_count_format">Girls: %d</string>
+    <string name="pref_category_ui_hints_title">UI hints</string>
+    <string name="pref_key_ui_hints_reset">key_ui_hints_reset</string>
+    <string name="pref_ui_hints_title">Reset UI hints</string>
+    <string name="pref_ui_hints_summary">And they will be shown a couple more times</string>
+    <string name="pref_category_auth_title">Authentication</string>
+    <string name="pref_key_logout">key_logout</string>
+    <string name="pref_logout_title">Logout</string>
+    <string name="pref_logout_summary">You will have to login again</string>
+    <string name="settings_hints_reset_message">Hints are reset</string>
 </resources>

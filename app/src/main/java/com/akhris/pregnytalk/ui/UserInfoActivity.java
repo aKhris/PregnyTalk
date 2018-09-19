@@ -25,6 +25,7 @@ import android.widget.Toast;
 
 import com.akhris.pregnytalk.MainActivity;
 import com.akhris.pregnytalk.R;
+import com.akhris.pregnytalk.adapters.ChildrenListAdapter;
 import com.akhris.pregnytalk.adapters.UserDetailsListAdapter;
 import com.akhris.pregnytalk.contract.Child;
 import com.akhris.pregnytalk.contract.FirebaseContract;
@@ -44,6 +45,8 @@ import com.squareup.picasso.Picasso;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
 
+import java.util.ArrayList;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -52,8 +55,7 @@ import butterknife.OnClick;
  * Activity representing user info
  */
 public class UserInfoActivity extends AppCompatActivity implements UserDetailsListAdapter.UserDetailsCallback,
-AddChildFragment.Callback
-{
+AddChildFragment.Callback, ChildrenListAdapter.ChildCallback, SwipeableRecyclerView.SwipeCallbacks {
 
     private static final int RC_PHOTO_PICKER = 100;
     private static final int RC_MAP_SEARCH_USER_LOCATION = 201;
@@ -61,6 +63,7 @@ AddChildFragment.Callback
     private static final long AFTER_TEXT_CHANGED_DELAY_MILLIS = 2000;
 
     @BindView(R.id.rv_user_info_details_list) RecyclerView userInfoList;
+    @BindView(R.id.rv_user_info_children_list) SwipeableRecyclerView childrenList;
     @BindView(R.id.iv_user_info_picture) ImageView userInfoPicture;
     @BindView(R.id.et_user_info_user_name) EditText userInfoName;
     @BindView(R.id.iv_user_info_add_to_contacts) ImageView addToContacts;
@@ -70,6 +73,7 @@ AddChildFragment.Callback
     private final static String TAG = "UserInfoActivity";
 
     private UserDetailsListAdapter mAdapter;
+    private ChildrenListAdapter mChildrenAdapter;
 
     private boolean mIsEditMode;
     private String mUid;
@@ -268,7 +272,7 @@ AddChildFragment.Callback
                     if(dataSnapshot.exists()){
                         mUser = dataSnapshot.getValue(User.class);
                         if(mAdapter==null){
-                            initAdapter();
+                            initAdapters();
                         } else {
                             mAdapter.swipeUser(mUser);
                         }
@@ -425,11 +429,17 @@ AddChildFragment.Callback
         });
     }
 
-    private void initAdapter(){
+    private void initAdapters(){
         mAdapter = new UserDetailsListAdapter(mUser, mIsEditMode);
         mAdapter.setCallback(UserInfoActivity.this);
         userInfoList.setLayoutManager(new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.VERTICAL, false));
         userInfoList.setAdapter(mAdapter);
+        if(mUid.equals(MainActivity.sMyUid) && mUser.getChildren()!=null){
+            childrenList.setLayoutManager(new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.VERTICAL, false));
+            mChildrenAdapter = new ChildrenListAdapter(new ArrayList<>(mUser.getChildren().values()), this);
+            childrenList.setAdapter(mChildrenAdapter);
+            childrenList.initSwiping(this);
+        }
     }
 
 
@@ -439,5 +449,20 @@ AddChildFragment.Callback
                 .child(FirebaseContract.CHILD_USER_CHILDREN)
                 .push()
                 .setValue(child);
+    }
+
+    @Override
+    public void onChildClick(Child child) {
+
+    }
+
+    /**
+     * Called when Child is going to be deleted.
+     * @param viewHolder
+     * @param direction
+     */
+    @Override
+    public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
+        Child childToDelete = mChildrenAdapter.getChild(viewHolder.getAdapterPosition());
     }
 }

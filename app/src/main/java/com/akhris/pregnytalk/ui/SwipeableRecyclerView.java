@@ -10,6 +10,10 @@ import android.view.View;
 
 import com.akhris.pregnytalk.adapters.ViewHolderFactory;
 
+/**
+ * Custom RecyclerView class that handles operations with Swiping.
+ * Has ItemTouchHelper callback class inside.
+ */
 public class SwipeableRecyclerView extends RecyclerView {
 
     public SwipeableRecyclerView(Context context) {
@@ -24,6 +28,10 @@ public class SwipeableRecyclerView extends RecyclerView {
         super(context, attrs, defStyle);
     }
 
+    /**
+     * Call this method to attach simple SwipeCallbacks method and make this RecyclerView
+     * swipeable
+     */
     public void initSwiping(SwipeCallbacks swipeCallbacks){
         RecyclerItemTouchHelperCallback itemTouchHelperCallback =
                 new RecyclerItemTouchHelperCallback(0, ItemTouchHelper.LEFT, swipeCallbacks);
@@ -34,7 +42,7 @@ public class SwipeableRecyclerView extends RecyclerView {
 
         private SwipeCallbacks mCallbacks;
 
-        public RecyclerItemTouchHelperCallback(int dragDirs, int swipeDirs, SwipeCallbacks mCallbacks) {
+        RecyclerItemTouchHelperCallback(int dragDirs, int swipeDirs, SwipeCallbacks mCallbacks) {
             super(dragDirs, swipeDirs);
             this.mCallbacks = mCallbacks;
         }

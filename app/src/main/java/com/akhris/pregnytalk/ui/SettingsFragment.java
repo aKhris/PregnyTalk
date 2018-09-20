@@ -14,6 +14,10 @@ import com.akhris.pregnytalk.R;
 import com.akhris.pregnytalk.utils.SharedPrefUtils;
 import com.firebase.ui.auth.AuthUI;
 
+/**
+ * Implementation of PreferenceFragmentCompat with NavigationCallbacks as a member field
+ * (since it cannot extend NavigationFragment class).
+ */
 public class SettingsFragment extends PreferenceFragmentCompat implements Preference.OnPreferenceClickListener {
 
     private Toolbar toolbar;
@@ -30,6 +34,9 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
         }
     }
 
+    /**
+     * Initialization of the Toolbar and setting on preference click listeners.
+     */
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -62,6 +69,10 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
     @Override
     public boolean onPreferenceClick(Preference preference) {
         String key = preference.getKey();
+        if(getContext()==null){
+            notifyUser("Something went wrong!");
+            return false;
+        }
         if(key.equals(getString(R.string.pref_key_logout))){
                 AuthUI.getInstance().signOut(getContext());
                 return true;
@@ -74,6 +85,9 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
         return false;
     }
 
+    /**
+     * Helper method to show a toast
+     */
     private void notifyUser(String text) {
         Toast.makeText(getContext(), text, Toast.LENGTH_SHORT).show();
     }

@@ -37,7 +37,6 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -54,13 +53,11 @@ import butterknife.OnClick;
 /**
  * Activity representing user info
  */
-public class UserInfoActivity extends AppCompatActivity implements UserDetailsListAdapter.UserDetailsCallback,
-AddChildFragment.Callback, ChildrenListAdapter.ChildCallback, SwipeableRecyclerView.SwipeCallbacks {
-
-    private static final int RC_PHOTO_PICKER = 100;
-    private static final int RC_MAP_SEARCH_USER_LOCATION = 201;
-    private static final int RC_MAP_SEARCH_HOSPITAL_LOCATION = 202;
-    private static final long AFTER_TEXT_CHANGED_DELAY_MILLIS = 2000;
+public class UserInfoActivity extends AppCompatActivity
+        implements UserDetailsListAdapter.UserDetailsCallback,
+        AddChildFragment.Callback,
+        ChildrenListAdapter.ChildCallback,
+        SwipeableRecyclerView.SwipeCallbacks {
 
     @BindView(R.id.rv_user_info_details_list) RecyclerView userInfoList;
     @BindView(R.id.rv_user_info_children_list) SwipeableRecyclerView childrenList;
@@ -69,40 +66,50 @@ AddChildFragment.Callback, ChildrenListAdapter.ChildCallback, SwipeableRecyclerV
     @BindView(R.id.iv_user_info_add_to_contacts) ImageView addToContacts;
     @BindView(R.id.toolbar) Toolbar mToolbar;
 
-    public final static String EXTRA_USER_ID="user_id";
-    private final static String TAG = "UserInfoActivity";
+    private static final int RC_MAP_SEARCH_USER_LOCATION = 201;
+    private static final int RC_MAP_SEARCH_HOSPITAL_LOCATION = 202;
 
+    // Wait this time after user changes username and save it
+    private static final long AFTER_TEXT_CHANGED_DELAY_MILLIS = 2000;
+
+    public final static String EXTRA_USER_ID="user_id";
+
+    // RecyclerViews adapters
     private UserDetailsListAdapter mAdapter;
     private ChildrenListAdapter mChildrenAdapter;
 
     private boolean mIsEditMode;
     private String mUid;
     private User mUser;
+    private Uri mCropImageUri;
 
+    // Firebase
     private DatabaseReference mUserReference;
     private DatabaseReference mUserInMyContactsReference;
 
-    private FirebaseStorage mFirebaseStorage;
     private StorageReference mUserAvatarReference;
-    private Uri mCropImageUri;
     private ValueEventListener mUserEventListener;
     private ValueEventListener mMyContactsListener;
-    private Query mThisContactInMyContactsQuery;
+
     private boolean mInContacts;
 
+    /**
+     * Helper method to make starting intent to show user info for given userId
+     */
     public static Intent getUserIntent(Context context, String userId){
         Intent intent = new Intent(context, UserInfoActivity.class);
         intent.putExtra(UserInfoActivity.EXTRA_USER_ID, userId);
         return intent;
     }
 
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_info);
         ButterKnife.bind(this);
-        if(getIntent()==null){finish();}
-        if(!getIntent().hasExtra(EXTRA_USER_ID)){finish();}
+        if(getIntent()==null){finish();}                        // Activity must have User ID in
+        if(!getIntent().hasExtra(EXTRA_USER_ID)){finish();}     // the starting intent
         mUid = getIntent().getStringExtra(EXTRA_USER_ID);
         if(mUid==null){return;}
         mUser = new User();
@@ -111,6 +118,9 @@ AddChildFragment.Callback, ChildrenListAdapter.ChildCallback, SwipeableRecyclerV
         setupUserReference();
     }
 
+    /**
+     * Called when user clicks on the avatar picture
+     */
     @OnClick(R.id.iv_user_info_picture)
     public void addPicture(){
         CropImage.activity()
@@ -119,6 +129,10 @@ AddChildFragment.Callback, ChildrenListAdapter.ChildCallback, SwipeableRecyclerV
                 .start(this);
     }
 
+    /**
+     * CropImage results handling took from examples from here:
+     * https://github.com/ArthurHub/Android-Image-Cropper
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -136,15 +150,16 @@ AddChildFragment.Callback, ChildrenListAdapter.ChildCallback, SwipeableRecyclerV
                     mUserReference.child(FirebaseContract.CHILD_USER_HOSPITAL_LOCATION_PLACEDATA).setValue(placeData);
                 }
                 break;
-//            case RC_PHOTO_PICKER:
             case CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE:
                 CropImage.ActivityResult result = CropImage.getActivityResult(data);
                 Uri selectedImageUri = result.getUri();
-//                Uri selectedImageUri = data.getData();
                 final StorageReference photoRef = mUserAvatarReference.child(selectedImageUri.getLastPathSegment());
-                photoRef.putFile(selectedImageUri).addOnSuccessListener(this, taskSnapshot -> photoRef.getDownloadUrl().addOnSuccessListener(uri -> {
-                    mUserReference.child(FirebaseContract.CHILD_USER_PICTURE_URL).setValue(uri.toString());
-                }));
+                photoRef.putFile(selectedImageUri)
+                        .addOnSuccessListener(this,
+                                taskSnapshot -> photoRef.getDownloadUrl()
+                                        .addOnSuccessListener
+                                                (uri -> mUserReference.child(FirebaseContract.CHILD_USER_PICTURE_URL)
+                                                .setValue(uri.toString())));
                 break;
             case CropImage.PICK_IMAGE_CHOOSER_REQUEST_CODE:
                 Uri imageUri = CropImage.getPickImageResultUri(this, data);
@@ -153,7 +168,10 @@ AddChildFragment.Callback, ChildrenListAdapter.ChildCallback, SwipeableRecyclerV
                 if (CropImage.isReadExternalStoragePermissionsRequired(this, imageUri)) {
                     // request permissions and handle the result in onRequestPermissionsResult()
                     mCropImageUri = imageUri;
-                    ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},   CropImage.PICK_IMAGE_PERMISSIONS_REQUEST_CODE);
+                    ActivityCompat
+                            .requestPermissions(this,
+                                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                                    CropImage.PICK_IMAGE_PERMISSIONS_REQUEST_CODE);
                 } else {
                     // no permissions required or already granted, can start crop image activity
                     startCropImageActivity(imageUri);
@@ -163,7 +181,7 @@ AddChildFragment.Callback, ChildrenListAdapter.ChildCallback, SwipeableRecyclerV
 
     }
 
-    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
         if (requestCode == CropImage.PICK_IMAGE_PERMISSIONS_REQUEST_CODE) {
             if (mCropImageUri != null && grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 // required permissions granted, start crop image activity
@@ -186,7 +204,7 @@ AddChildFragment.Callback, ChildrenListAdapter.ChildCallback, SwipeableRecyclerV
                 .child(FirebaseContract.CHILD_USERS)
                 .child(mUid);
 
-        mFirebaseStorage = FirebaseStorage.getInstance();
+        FirebaseStorage mFirebaseStorage = FirebaseStorage.getInstance();
 
         mUserAvatarReference = mFirebaseStorage
                 .getReference()
@@ -206,7 +224,10 @@ AddChildFragment.Callback, ChildrenListAdapter.ChildCallback, SwipeableRecyclerV
     }
 
 
-
+    /**
+     * Part of UserDetailsCallback.
+     * Set icon ID and place data to show on the map.
+     */
     @Override
     public void onUserLocationClick(PlaceData placeData) {
         Intent intent = new Intent(this, MapSearchActivity.class);
@@ -215,6 +236,10 @@ AddChildFragment.Callback, ChildrenListAdapter.ChildCallback, SwipeableRecyclerV
         startActivityForResult(intent, RC_MAP_SEARCH_USER_LOCATION);
     }
 
+    /**
+     * Part of UserDetailsCallback.
+     * Set icon ID and place data to show on the map.
+     */
     @Override
     public void onHospitalLocationClick(PlaceData placeData) {
         Intent intent = new Intent(this, MapSearchActivity.class);
@@ -223,6 +248,9 @@ AddChildFragment.Callback, ChildrenListAdapter.ChildCallback, SwipeableRecyclerV
         startActivityForResult(intent, RC_MAP_SEARCH_HOSPITAL_LOCATION);
     }
 
+    /**
+     * Show date picker dialog to choose new birth date
+     */
     @Override
     public void onBirthDateClick(Long birthDateMillis) {
         DateUtils.showDatePicker(
@@ -235,6 +263,9 @@ AddChildFragment.Callback, ChildrenListAdapter.ChildCallback, SwipeableRecyclerV
         );
     }
 
+    /**
+     * Show date picker dialog to choose new estimated delivery date
+     */
     @Override
     public void onEstimatedDateClick(Long estimatedDateMillis) {
         DateUtils.showDatePicker(
@@ -247,6 +278,9 @@ AddChildFragment.Callback, ChildrenListAdapter.ChildCallback, SwipeableRecyclerV
         );
     }
 
+    /**
+     * Called when user clicks AddChildButton
+     */
     @Override
     public void onAddChildClick(String sex) {
         AddChildFragment
@@ -254,6 +288,9 @@ AddChildFragment.Callback, ChildrenListAdapter.ChildCallback, SwipeableRecyclerV
                 .show(getSupportFragmentManager(), "add_child_dialog");
     }
 
+    /**
+     * Saving user name to Firebase Database when user changes it
+     */
     private void saveUserName(){
         String name = userInfoName.getText().toString();
         if(!name.equals(mUser.getName())) {
@@ -264,6 +301,9 @@ AddChildFragment.Callback, ChildrenListAdapter.ChildCallback, SwipeableRecyclerV
     }
 
 
+    /**
+     * Init listeners if they are not null and attach it to the references.
+     */
     private void setListeners(){
         if(mUserEventListener==null){
             mUserEventListener = new ValueEventListener() {
@@ -309,13 +349,8 @@ AddChildFragment.Callback, ChildrenListAdapter.ChildCallback, SwipeableRecyclerV
             mMyContactsListener = new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    if(dataSnapshot.getValue()==null){
-                        //no such user in contacts
-                        mInContacts=false;
-                    } else {
-                        //there is such user in contacts
-                        mInContacts=true;
-                    }
+                    // If null we do not have this user in the contacts list
+                    mInContacts = dataSnapshot.getValue() != null;
                     checkContactsList();
                 }
 
@@ -331,6 +366,9 @@ AddChildFragment.Callback, ChildrenListAdapter.ChildCallback, SwipeableRecyclerV
 
     }
 
+    /**
+     * Checks if user in contacts to set appropriate icon to the "add to contacts" button
+     */
     private void checkContactsList() {
         if(mIsEditMode){return;}
         if(mInContacts){
@@ -343,7 +381,9 @@ AddChildFragment.Callback, ChildrenListAdapter.ChildCallback, SwipeableRecyclerV
     }
 
 
-
+    /**
+     * Called when user clicks on the "add to contacts" button
+     */
     @OnClick(R.id.iv_user_info_add_to_contacts)
     public void onAddToContactsClick(){
         if(mInContacts){
@@ -357,6 +397,10 @@ AddChildFragment.Callback, ChildrenListAdapter.ChildCallback, SwipeableRecyclerV
         }
     }
 
+    /**
+     * Checking is user is watching self info (it can be changed in that case)
+     * or info of another user.
+     */
     private void checkEditMode() {
         if(mIsEditMode){
             addToContacts.setVisibility(View.INVISIBLE);
@@ -395,6 +439,9 @@ AddChildFragment.Callback, ChildrenListAdapter.ChildCallback, SwipeableRecyclerV
         setListeners();
     }
 
+    /**
+     * Removing listeners and making them null
+     */
     private void removeListeners() {
         if(mUserEventListener!=null){
             mUserReference.removeEventListener(mUserEventListener);
@@ -411,8 +458,6 @@ AddChildFragment.Callback, ChildrenListAdapter.ChildCallback, SwipeableRecyclerV
      * https://stackoverflow.com/a/35268540/7635275
      */
     private void initUI(){
-//        setSupportActionBar(mToolbar);
-
         mToolbar.setNavigationOnClickListener(v->finish());
         userInfoName.addTextChangedListener(new TextWatcher() {
             @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
@@ -429,8 +474,12 @@ AddChildFragment.Callback, ChildrenListAdapter.ChildCallback, SwipeableRecyclerV
         });
     }
 
+    /**
+     * Setting adapter for user info recycler view.
+     * And additional adapter for children list.
+     */
     private void initAdapters(){
-        mAdapter = new UserDetailsListAdapter(mUser, mIsEditMode);
+        mAdapter = new UserDetailsListAdapter(mUser);
         mAdapter.setCallback(UserInfoActivity.this);
         userInfoList.setLayoutManager(new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.VERTICAL, false));
         userInfoList.setAdapter(mAdapter);
@@ -442,7 +491,9 @@ AddChildFragment.Callback, ChildrenListAdapter.ChildCallback, SwipeableRecyclerV
         }
     }
 
-
+    /**
+     * Part of UserDetailsCallback.
+     */
     @Override
     public void onChildAdded(Child child) {
         mUserReference
@@ -458,11 +509,10 @@ AddChildFragment.Callback, ChildrenListAdapter.ChildCallback, SwipeableRecyclerV
 
     /**
      * Called when Child is going to be deleted.
-     * @param viewHolder
-     * @param direction
      */
     @Override
     public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
         Child childToDelete = mChildrenAdapter.getChild(viewHolder.getAdapterPosition());
+        // TODO: 20.09.18 actually remove it from database here
     }
 }

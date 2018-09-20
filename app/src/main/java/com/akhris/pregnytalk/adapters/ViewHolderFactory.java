@@ -17,9 +17,15 @@ import com.akhris.pregnytalk.R;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+
+/**
+ * Util class for handling view holder's operations
+ */
 public class ViewHolderFactory {
 
-
+    /**
+     * Creating standard two lined list item with icon on the left
+     */
     public static TwoLineWithIconItemViewHolder onCreateTwoLineWithIconViewHolder(@NonNull ViewGroup parent, ItemClickListener itemClickListener) {
 
                 return new TwoLineWithIconItemViewHolder(
@@ -27,18 +33,27 @@ public class ViewHolderFactory {
                                 .inflate(R.layout.list_item_two_line_icon_secondary_text, parent, false), itemClickListener);
     }
 
+    /**
+     * Creating view holder for chats list
+     */
     public static ChatsListItemHolder onCreateChatsListItemViewHolder(@NonNull ViewGroup parent, ItemClickListener itemClickListener){
         return new ChatsListItemHolder(
                 LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.chats_list_item, parent, false), itemClickListener);
     }
 
+    /**
+     * Creating view holder for chats list in the MapAndListFragment
+     */
     public static ChatsListItemFromMapHolder onCreateChatsListFromMapItemViewHolder(@NonNull ViewGroup parent, ItemClickListener itemClickListener){
         return new ChatsListItemFromMapHolder(
                 LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.chats_list_item, parent, false), itemClickListener);
     }
 
+    /**
+     * Creating view holder for message in the chat
+     */
     public static MessageItemHolder onCreateMessageItemViewHolder(@NonNull ViewGroup parent, MessageClickListener messageClickListener){
         return new MessageItemHolder(
                 LayoutInflater.from(parent.getContext())
@@ -47,6 +62,9 @@ public class ViewHolderFactory {
         );
     }
 
+    /**
+     * Creating view holder for contacts list
+     */
     public static ContactsItemHolder onCreateContactsItemViewHolder(@NonNull ViewGroup parent, ContactsItemClickListener contactsItemClickListener){
         return new ContactsItemHolder(
                 LayoutInflater.from(parent.getContext())
@@ -55,19 +73,18 @@ public class ViewHolderFactory {
         );
     }
 
-    public static ChildrenItemViewHolder onCreateChildrenItemViewHolder(@NonNull ViewGroup parent, ChildrenClickListener childrenClickListener){
-        return new ChildrenItemViewHolder(
-                LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.list_item_two_line_children_material, parent, false),
-                childrenClickListener
-        );
-    }
-
+    /**
+     * Creating view holder for children list
+     */
     public static ChildViewHolder onCreateChildViewHolder(@NonNull ViewGroup parent, ItemClickListener itemClickListener) {
         return new ChildViewHolder(
                 LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.children_list_item, parent, false), itemClickListener);
     }
+
+    /**
+     * Implementation of view holders      ************************
+     */
 
     public static class TwoLineWithIconItemViewHolder extends RecyclerView.ViewHolder{
         @BindView(R.id.tv_two_line_item_item_text_top) TextView topText;
@@ -81,20 +98,6 @@ public class ViewHolderFactory {
         }
     }
 
-    public static class ChildrenItemViewHolder extends RecyclerView.ViewHolder {
-        @BindView(R.id.tv_boys_count) TextView boysCount;
-        @BindView(R.id.tv_girls_count) TextView girlsCount;
-        @BindView(R.id.iv_babyboy) ImageView babyBoyIcon;
-        @BindView(R.id.iv_babygirl) ImageView babyGirlIcon;
-        @BindView(R.id.rv_children_list) RecyclerView childrenList;
-
-        ChildrenItemViewHolder(View itemView, final ChildrenClickListener childrenClickListener) {
-            super(itemView);
-            ButterKnife.bind(this, itemView);
-            babyBoyIcon.setOnClickListener(v->childrenClickListener.onAddBoyClick());
-            babyGirlIcon.setOnClickListener(v->childrenClickListener.onAddGirlClick());
-        }
-    }
 
     public static class ChatsListItemHolder extends WithBackgroundHolder{
         @BindView(R.id.tv_chat_name)                TextView chatName;
@@ -114,7 +117,6 @@ public class ViewHolderFactory {
         @BindView(R.id.tv_chat_name)                TextView chatUsersCount;
         @BindView(R.id.tv_chat_user_name)           TextView chatName;
         @BindView(R.id.tv_chat_last_message)        TextView chatLocation;
-//        @BindView(R.id.tv_chat_message_timestamp)   TextView chatTimeStamp;
 
         ChatsListItemFromMapHolder(View itemView, final ItemClickListener itemClickListener) {
             super(itemView);
@@ -165,7 +167,14 @@ public class ViewHolderFactory {
             itemView.setOnClickListener(v -> itemClickListener.onItemClick(getAdapterPosition()));
         }
     }
-    
+
+    /**
+     * Base View Holder class that is used for "swipe to delete" functionality.
+     * It ensures that Swipeable View Holder contains foreground view.
+     * And also it has methods to animate bouncing and to release swiped state.
+     * To use it just extend ViewHolder from this class and
+     * add foreground view with id=R.id.foreground to item layout.
+     */
     public static class WithBackgroundHolder extends RecyclerView.ViewHolder{
 
         public boolean wasSwiped = false;

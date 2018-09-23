@@ -5,4 +5,44 @@
     <dimen name="nav_header_vertical_spacing">8dp</dimen>
     <dimen name="nav_header_height">176dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
+    <dimen name="map_fragment_layout_margin">8dp</dimen>
+    <dimen name="user_info_app_bar_height">200dp</dimen>
+    <dimen name="user_info_picture_dimen">80dp</dimen>
+    <dimen name="user_info_icon_layout_margin">16dp</dimen>
+    <dimen name="info_window_padding">8dp</dimen>
+    <dimen name="info_window_layout_margin">8dp</dimen>
+    <dimen name="chats_list_horizontal_margin">16dp</dimen>
+    <dimen name="contacts_list_picture_dimen">40dp</dimen>
+    <dimen name="contacts_list_horizontal_margin">16dp</dimen>
+    <dimen name="contacts_list_layout_height">56dp</dimen>
+    <dimen name="add_child_dialog_width">280dp</dimen>
+    <dimen name="add_child_dialog_layout_margin">8dp</dimen>
+    <dimen name="add_child_dialog_horizontal_margin">8dp</dimen>
+    <dimen name="add_child_dialog_vertical_margin">8dp</dimen>
+    <dimen name="add_child_dialog_title_height">64dp</dimen>
+    <dimen name="chat_fragment_send_message_bar_height">48dp</dimen>
+    <dimen name="chat_info_layout_margin">8dp</dimen>
+    <dimen name="chats_list_divider_width">1dp</dimen>
+    <dimen name="create_chat_dialog_width">280dp</dimen>
+    <dimen name="create_chat_dialog_layout_margin">8dp</dimen>
+    <dimen name="create_chat_dialog_horizontal_margin">8dp</dimen>
+    <dimen name="create_chat_dialog_vertical_margin">8dp</dimen>
+    <dimen name="create_chat_dialog_title_height">64dp</dimen>
+    <dimen name="list_item_layout_margin">16dp</dimen>
+    <dimen name="list_item_icon_dimen">40dp</dimen>
+    <dimen name="list_item_horizontal_margin">16dp</dimen>
+    <dimen name="message_horizontal_margin">8dp</dimen>
+    <dimen name="message_vertical_margin">2dp</dimen>
+    <dimen name="message_min_width">100dp</dimen>
+    <dimen name="message_padding">4dp</dimen>
+    <dimen name="message_max_width">300dp</dimen>
+    <dimen name="widget_layout_margin">4dp</dimen>
+    <dimen name="send_message_bar_padding">16dp</dimen>
+    <dimen name="swipe_item_icon_margin">16dp</dimen>
+    <dimen name="widget_horizontal_margin">16dp</dimen>
+
+    <!--
+Refer to App Widget Documentation for margin information
+http://developer.android.com/guide/topics/appwidgets/index.html#CreatingLayout
+    -->
 </resources>

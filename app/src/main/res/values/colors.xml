@@ -6,8 +6,6 @@
     <color name="secondaryColor">#ff4081</color>
     <color name="secondaryLightColor">#ff79b0</color>
     <color name="secondaryDarkColor">#c60055</color>
-    <color name="primaryTextColor">#000000</color>
-    <color name="secondaryTextColor">#ffffff</color>
 
     <color name="topTextColor">#de000000</color>
     <color name="bottomTextColor">#99000000</color>
@@ -16,5 +14,8 @@
     <color name="babyGirl">#ff80ab</color>
     <color name="babyBoy">#80d8ff</color>
 
-    <color name="listItemBackground">#FFFFFFFF</color>
+    <color name="fragmentsBackground">@android:color/white</color>
+    <color name="listItemBackground">@android:color/white</color>
+    <color name="lightGrayColor">#cfd8dc</color>
+    <color name="chatFragmentBackground">@color/fragmentsBackground</color>
 </resources>

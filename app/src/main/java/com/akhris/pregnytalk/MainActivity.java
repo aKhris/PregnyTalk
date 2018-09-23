@@ -1,5 +1,6 @@
 package com.akhris.pregnytalk;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -19,6 +20,7 @@ import android.widget.TextView;
 
 import com.akhris.pregnytalk.contract.FirebaseContract;
 import com.akhris.pregnytalk.contract.User;
+import com.akhris.pregnytalk.ui.ChatsListFragment;
 import com.akhris.pregnytalk.ui.NavigationCallbacks;
 import com.akhris.pregnytalk.ui.UserInfoActivity;
 import com.akhris.pregnytalk.utils.ImageUtils;
@@ -57,48 +59,62 @@ import butterknife.ButterKnife;
 public class MainActivity extends AppCompatActivity
         implements
         NavigationView.OnNavigationItemSelectedListener,    // Listens to navigation menu clicks
-        NavigationCallbacks {      // Used to interact with NavigationFragment subclasses
+        NavigationCallbacks,
+        ChatsListFragment.Callback{                               // Used to interact with NavigationFragment subclasses
+
 
     @BindView(R.id.drawer_layout) DrawerLayout drawer;
     @BindView(R.id.nav_view) NavigationView navigationView;
 
-    //Authentication data. Initialized after successful authentication.
+    // Authentication data. Initialized after successful authentication.
     public static String sMyUid="";
     public static User sMe;
 
-    //Used to determine if the list of messages was shown not to show it again after device rotation
+    // Used to determine if the list of messages was shown not to show it again after device rotation
     private static final String BUNDLE_WAS_MESSAGES_LIST_SHOWN = "was_messages_list_shown";
     private boolean isMessagesListShown=false;
 
-    //Request codes
+    // Request codes
     private static final int RC_SIGN_IN = 100;
     private static final int RC_USER_INFO_CHANGE = 200;
 
-    //Views inside NavigationDrawer
+    // Views inside NavigationDrawer
     private ImageView   mHeaderPhoto;
     private TextView    mHeaderUsername;
     private TextView    mHeaderUserAuthInfo;
-    private ImageView   mHeaderUserInfoButton;
 
     private ActionBarDrawerToggle mToggle;
 
-    //Firebase
+    // Firebase
     private FirebaseAuth mFirebaseAuth;
     private FirebaseDatabase mFirebaseDatabase;
     private DatabaseReference mUserReference;
     private ValueEventListener mUserValueEventListener;
     private FirebaseAuth.AuthStateListener mAuthStateListener;
 
-    //NavigationManager instance that is shared between all NavigationFragment subclasses
+    // NavigationManager instance that is shared between all NavigationFragment subclasses
     private NavigationManager mNavigationManager;
 
+    // Used to open chat room right after initialization.
+    // Used with widget.
+    private static final String EXTRA_CHATROOM_ID = "extra_chatroom_id";
+    private String mStartChatRoomId;
 
+
+    public static void startActivityAndShowChat(Context context, String chatRoomId){
+        Intent intent = new Intent (context, MainActivity.class);
+        intent.putExtra(EXTRA_CHATROOM_ID, chatRoomId);
+        context.startActivity(intent);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
+        if(getIntent()!=null && getIntent().hasExtra(EXTRA_CHATROOM_ID)){
+            mStartChatRoomId = getIntent().getStringExtra(EXTRA_CHATROOM_ID);
+        }
         restoreState(savedInstanceState);
         initNavigation();
         initFirebase();
@@ -143,7 +159,7 @@ public class MainActivity extends AppCompatActivity
         mHeaderPhoto = navigationView.getHeaderView(0).findViewById(R.id.nav_photoview);
         mHeaderUsername = navigationView.getHeaderView(0).findViewById(R.id.nav_user_name);
         mHeaderUserAuthInfo = navigationView.getHeaderView(0).findViewById(R.id.nav_user_auth_info);
-        mHeaderUserInfoButton = navigationView.getHeaderView(0).findViewById(R.id.iv_nav_user_info_button);
+        ImageView mHeaderUserInfoButton = navigationView.getHeaderView(0).findViewById(R.id.iv_nav_user_info_button);
         mHeaderUserInfoButton.setOnClickListener(v-> callSelfUserInfo());
     }
 
@@ -165,12 +181,18 @@ public class MainActivity extends AppCompatActivity
     }
 
 
+    /**
+     * Handling back button pressing.
+     * If there was no fragments to navigate back using NavigationManager than finish the activity.
+     */
     @Override
     public void onBackPressed() {
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            super.onBackPressed();
+            if(!mNavigationManager.navigateBack()){
+                finish();
+            }
         }
     }
 
@@ -312,6 +334,7 @@ public class MainActivity extends AppCompatActivity
         }
         mHeaderUsername.setText(sMe.getName());
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        if(firebaseUser==null){return;}
         String authInfo="";
         if(firebaseUser.getEmail()!=null && firebaseUser.getEmail().length()>0){
             authInfo+=firebaseUser.getEmail();
@@ -346,6 +369,7 @@ public class MainActivity extends AppCompatActivity
         if(sMyUid.length()==0){return;}
 
         Pair<View, String> p1 = Pair.create(mHeaderPhoto, getString(R.string.transition_user_info_photo));
+        @SuppressWarnings("unchecked")
         ActivityOptionsCompat options = ActivityOptionsCompat.
                 makeSceneTransitionAnimation(this, p1);
         ActivityCompat.startActivityForResult(this, UserInfoActivity.getUserIntent(this, sMyUid), RC_USER_INFO_CHANGE, options.toBundle());
@@ -371,5 +395,20 @@ public class MainActivity extends AppCompatActivity
         mFirebaseAuth.removeAuthStateListener(mAuthStateListener);
         detachDatabaseReadListener();
     }
+
+    /**
+     * Called when ChatsListFragment is attaching to get chat ID to navigate to.
+     * Used when user clicks the chatlist item on a widget.
+     */
+    @Override
+    public String getChatIDToShowOnStart() {
+        if(getIntent()!=null){
+            getIntent().removeExtra(EXTRA_CHATROOM_ID);
+        }
+        String returnString = mStartChatRoomId;
+        mStartChatRoomId = null;
+        return returnString;
+    }
+
 
 }

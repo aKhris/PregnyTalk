@@ -21,7 +21,7 @@ import android.widget.ImageButton;
 
 import com.akhris.pregnytalk.MainActivity;
 import com.akhris.pregnytalk.R;
-import com.akhris.pregnytalk.adapters.MessageClickListener;
+import com.akhris.pregnytalk.adapters.AdaptersClickListeners.MessageClickListener;
 import com.akhris.pregnytalk.adapters.MessagesListAdapter;
 import com.akhris.pregnytalk.contract.ChatRoom;
 import com.akhris.pregnytalk.contract.FirebaseContract;
@@ -48,7 +48,10 @@ import static android.app.Activity.RESULT_OK;
  */
 public class ChatFragment extends NavigationFragment
         implements MessageClickListener,
-        MenuItem.OnMenuItemClickListener {
+        MenuItem.OnMenuItemClickListener
+{
+
+
 
     @Nullable @BindView(R.id.toolbar) Toolbar mToolbar;
     @BindView(R.id.rv_chat) RecyclerView mChatList;
@@ -62,7 +65,9 @@ public class ChatFragment extends NavigationFragment
 
     // Argument passed to new instance of a fragment
     private final static String ARG_CHAT_ROOM_ID ="chat_room_id";
+    private final static String ARG_EMBEDDED_IN_CHATS_LIST_FRAGMENT ="embedded_in_fragment";
     private String mChatRoomId;
+    private boolean mIsEmbedded;
 
     // Firebase
     private DatabaseReference mRoomMessagesReference;
@@ -72,7 +77,11 @@ public class ChatFragment extends NavigationFragment
     private ValueEventListener mChatRoomMetaDataEventListener;
     private StorageReference mChatroomFilesStorage;
 
-
+    // Saving scroll position on screen rotation
+    private static final String BUNDLE_SCROLL_POSITION = "scroll_position";
+    // Waiting this time before setting saved scroll position to NestedScrollView
+    // During this time the list has to be populated with items
+    private static final int DELAY_SCROLL_MILLIS = 1000;
 
     public ChatFragment() {
         // Required empty public constructor
@@ -82,9 +91,10 @@ public class ChatFragment extends NavigationFragment
      * Making new ChatFragment instance for given chatRoomId
      * @param chatRoomId - ID of the chatroom in the Firebase Database
      */
-    public static ChatFragment newInstance(String chatRoomId) {
+    public static ChatFragment newInstance(String chatRoomId, boolean isEmbedded) {
         Bundle args = new Bundle();
         args.putString(ARG_CHAT_ROOM_ID, chatRoomId);
+        args.putBoolean(ARG_EMBEDDED_IN_CHATS_LIST_FRAGMENT, isEmbedded);
         ChatFragment fragment = new ChatFragment();
         fragment.setArguments(args);
         return fragment;
@@ -100,9 +110,18 @@ public class ChatFragment extends NavigationFragment
         setupEditText();
         if(getArguments()!=null){
             mChatRoomId = getArguments().getString(ARG_CHAT_ROOM_ID);
+            mIsEmbedded = getArguments().getBoolean(ARG_EMBEDDED_IN_CHATS_LIST_FRAGMENT, false);
         }
         setupReferences();
-        setHasOptionsMenu(true);
+        setHasOptionsMenu(!mIsEmbedded);
+
+        if(savedInstanceState!=null && savedInstanceState.containsKey(BUNDLE_SCROLL_POSITION)) {
+            int visiblePos = savedInstanceState.getInt(BUNDLE_SCROLL_POSITION);
+            if(visiblePos>RecyclerView.NO_POSITION){
+                mChatList.postDelayed(()->
+                        mChatList.getLayoutManager().scrollToPosition(visiblePos), DELAY_SCROLL_MILLIS);
+            }
+        }
         return rootView;
     }
 
@@ -300,6 +319,14 @@ public class ChatFragment extends NavigationFragment
         mAdapter.clear();
     }
 
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(BUNDLE_SCROLL_POSITION,
+                ((LinearLayoutManager)mChatList.getLayoutManager()).findLastCompletelyVisibleItemPosition());
+    }
+
     @Override
     public boolean withBackButton() {
         return true;
@@ -328,4 +355,5 @@ public class ChatFragment extends NavigationFragment
         }
         return false;
     }
+
 }

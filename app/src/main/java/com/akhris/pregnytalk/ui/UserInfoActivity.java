@@ -282,9 +282,8 @@ public class UserInfoActivity extends AppCompatActivity
      * Called when user clicks AddChildButton
      */
     @Override
-    public void onAddChildClick(String sex) {
-        AddChildFragment
-                .newInstance(sex)
+    public void onAddChildClick() {
+        new AddChildFragment()
                 .show(getSupportFragmentManager(), "add_child_dialog");
     }
 
@@ -311,10 +310,12 @@ public class UserInfoActivity extends AppCompatActivity
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     if(dataSnapshot.exists()){
                         mUser = dataSnapshot.getValue(User.class);
+                        mUser.setuId(dataSnapshot.getKey());
                         if(mAdapter==null){
                             initAdapters();
                         } else {
                             mAdapter.swipeUser(mUser);
+                            mChildrenAdapter.swipeChildren(mUser);
                         }
                         if(mUser.getPictureUrl()!=null && mUser.getPictureUrl().length()>0) {
                             Picasso.get()

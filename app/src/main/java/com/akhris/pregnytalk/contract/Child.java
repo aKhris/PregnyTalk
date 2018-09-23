@@ -1,5 +1,8 @@
 package com.akhris.pregnytalk.contract;
 
+/**
+ * Class representing Child in Firebase Realtime Database
+ */
 public class Child {
     private String name;
     private String sex;

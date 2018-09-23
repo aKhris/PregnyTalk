@@ -18,20 +18,16 @@
     <string name="chat_info_location_query_hint">расположение беседы</string>
     <string name="user_info_username_hint">Введите ваше имя</string>
     <string name="search_map_choose_place">Выбрать это место</string>
-    <string name="user_info_hint_estimated_date">Нажмите для установки предполагаемой даты родов</string>
-    <string name="user_info_hint_date_of_birth">Нажмите для установки даты рождения</string>
     <string name="user_info_title_date_of_birth">Дата рождения</string>
     <string name="user_info_title_hospital">Роддом</string>
     <string name="user_info_title_location">Расположение</string>
-    <string name="user_info_title_children">Дети</string>
+    <string name="user_info_title_children">Дети (нажмите, чтобы добавить)</string>
     <string name="user_info_title_edd">Предполагаемая дата родов</string>
-    <string name="user_info_title_age">Возраст:</string>
     <string name="action_search">Поиск</string>
     <string name="toolbar_title_contacts">Контакты</string>
     <string name="toolbar_title_settingsfragment">Настройки</string>
     <string name="toolbar_title_mapsandlistfragment">Карта</string>
     <string name="toolbar_title_chatslistfragment">Сообщения</string>
-    <string name="title_activity_maps">Карта</string>
     <string name="nav_title_settings">Настройки</string>
     <string name="nav_title_map">Карта</string>
     <string name="nav_title_contacts">Контакты</string>
@@ -41,5 +37,4 @@
     <string name="content_description_user_avatar">Фото пользователя</string>
     <string name="hint_write_your_message">Напишите сообщение…</string>
     <string name="content_description_attach_image">Прикрепить изображение</string>
-    <string name="action_settings">Настройки</string>
 </resources>

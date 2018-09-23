@@ -15,6 +15,8 @@ import com.akhris.pregnytalk.R;
 import com.akhris.pregnytalk.contract.Child;
 import com.akhris.pregnytalk.utils.DateUtils;
 
+import java.util.Random;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -30,23 +32,12 @@ public class AddChildFragment extends DialogFragment {
     @BindView(R.id.rb_sex_male) RadioButton mMaleRadioButton;
     @BindView(R.id.rb_sex_female) RadioButton mFemaleRadioButton;
 
-    // Argument passed to new instance of a fragment
-    private final static String ARG_SEX ="bundle_sex";
-    private String mSex;
 
     private long mDateOfBirth;
 
     //Parent of that fragment must implement this Callback to get a Child instance back
     private Callback mCallback;
 
-
-    public static AddChildFragment newInstance(String sex) {
-        Bundle args = new Bundle();
-        args.putString(ARG_SEX, sex);
-        AddChildFragment fragment = new AddChildFragment();
-        fragment.setArguments(args);
-        return fragment;
-    }
 
     public AddChildFragment() {
     }
@@ -62,8 +53,6 @@ public class AddChildFragment extends DialogFragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if(getArguments()==null || !getArguments().containsKey(ARG_SEX)){return;}
-
         if(getParentFragment() instanceof Callback){
             mCallback = (Callback) getParentFragment();
         }
@@ -77,7 +66,6 @@ public class AddChildFragment extends DialogFragment {
             );
         }
 
-        this.mSex = getArguments().getString(ARG_SEX);
         this.mDateOfBirth = System.currentTimeMillis();
     }
 
@@ -93,7 +81,9 @@ public class AddChildFragment extends DialogFragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        if(mSex.equals(Child.SEX_FEMALE)){
+        Random rnd = new Random();
+
+        if(rnd.nextBoolean()){
             mFemaleRadioButton.setChecked(true);
         } else {
             mMaleRadioButton.setChecked(true);

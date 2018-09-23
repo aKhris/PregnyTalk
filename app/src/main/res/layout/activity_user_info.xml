@@ -8,7 +8,7 @@
 
         <android.support.design.widget.AppBarLayout
             android:layout_width="match_parent"
-            android:layout_height="200dp"
+            android:layout_height="@dimen/user_info_app_bar_height"
             android:fitsSystemWindows="true">
 
             <android.support.design.widget.CollapsingToolbarLayout
@@ -35,8 +35,8 @@
 
                 <ImageView
                     android:id="@+id/iv_user_info_picture"
-                    android:layout_width="80dp"
-                    android:layout_height="80dp"
+                    android:layout_width="@dimen/user_info_picture_dimen"
+                    android:layout_height="@dimen/user_info_picture_dimen"
                     android:layout_marginTop="?attr/actionBarSize"
                     android:scaleType="center"
                     app:srcCompat="@drawable/ic_add_a_photo_32dp"
@@ -50,8 +50,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:tint="@color/primaryLightColor"
-                    android:layout_margin="16dp"
+                    android:layout_margin="@dimen/user_info_icon_layout_margin"
                     android:layout_gravity="end|top"
+                    android:contentDescription="@string/content_description_user_add_to_contacts"
                     />
 
                 <EditText

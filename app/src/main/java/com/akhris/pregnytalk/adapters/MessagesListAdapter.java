@@ -10,6 +10,7 @@ import android.widget.FrameLayout;
 
 import com.akhris.pregnytalk.MainActivity;
 import com.akhris.pregnytalk.R;
+import com.akhris.pregnytalk.adapters.AdaptersClickListeners.MessageClickListener;
 import com.akhris.pregnytalk.contract.Message;
 import com.akhris.pregnytalk.utils.DateUtils;
 import com.squareup.picasso.Callback;
@@ -18,13 +19,18 @@ import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Class representing adapter for list of messages inside chat room
+ */
 public class MessagesListAdapter extends RecyclerView.Adapter<ViewHolderFactory.MessageItemHolder>{
+
     private List<Message> messagesList;
+    // Callback that fired when user clicks on user name shown on the message view - to show
+    // UserInfoActivity with selected user.
     private MessageClickListener mMessageClickListener;
 
     public MessagesListAdapter(MessageClickListener mMessageClickListener) {
         messagesList = new ArrayList<>();
-//        setHasStableIds(true);
         this.mMessageClickListener = mMessageClickListener;
     }
 
@@ -39,6 +45,10 @@ public class MessagesListAdapter extends RecyclerView.Adapter<ViewHolderFactory.
         return ViewHolderFactory.onCreateMessageItemViewHolder(parent, mMessageClickListener);
     }
 
+    /**
+     * Binding message views to Message object: user name, message text, timestamp and
+     * picture (if exists)
+     */
     @Override
     public void onBindViewHolder(@NonNull ViewHolderFactory.MessageItemHolder holder, int position) {
         Context context = holder.itemView.getContext();
@@ -74,14 +84,13 @@ public class MessagesListAdapter extends RecyclerView.Adapter<ViewHolderFactory.
             holder.picture.setVisibility(View.GONE);
             holder.progressBar.setVisibility(View.GONE);
         }
-        FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
-        if(message.getUserId().equals(MainActivity.sMyUid)){
-            layoutParams.gravity = Gravity.END;
-        } else {
-            layoutParams.gravity = Gravity.START;
-        }
-
+        // Set message alignment:
+        // From the right - for outcoming messages;
+        // From the left - for incoming;
+        FrameLayout.LayoutParams layoutParams =
+                new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        layoutParams.gravity = message.getUserId().equals(MainActivity.sMyUid) ? Gravity.END : Gravity.START;
         holder.rootCard.setLayoutParams(layoutParams);
     }
 

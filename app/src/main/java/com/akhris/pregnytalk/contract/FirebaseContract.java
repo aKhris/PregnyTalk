@@ -1,8 +1,11 @@
 package com.akhris.pregnytalk.contract;
 
-import com.akhris.pregnytalk.MainActivity;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+
+/**
+ * Util class representing Firebase Contract
+ */
 
 public class FirebaseContract {
     public static final String CHILD_ROOM_MESSAGES="room-messages";
@@ -26,7 +29,6 @@ public class FirebaseContract {
     public static final String CHILD_USER_ESTIMATED_DATE_MILLIS = "estimatedDateMillis";
     public static final String CHILD_USER_NAME = "name";
     public static final String CHILD_USER_PICTURE_URL = "pictureUrl";
-    public static final String CHILD_USER_ROOM_IDS = "roomIds";
     public static final String CHILD_USER_CONTACTS = "contacts";
     public static final String CHILD_USER_CHILDREN = "children";
 
@@ -41,14 +43,6 @@ public class FirebaseContract {
     public static final String CHILD_ROOM_TYPE = "type";
 
 
-
-    public static DatabaseReference getUserReference(String uId){
-        return FirebaseDatabase
-                .getInstance()
-                .getReference()
-                .child(CHILD_USERS)
-                .child(uId);
-    }
 
     public static DatabaseReference getRoomsMetaDataReference() {
         return FirebaseDatabase

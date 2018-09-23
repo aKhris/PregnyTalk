@@ -49,6 +49,20 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
 
+        <receiver android:name=".widget.PregnyChatsListWidget">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/pregny_chats_list_widget_info" />
+        </receiver>
+        <service android:name=".widget.ChatsListService"
+            android:exported="false"
+            android:permission="android.permission.BIND_REMOTEVIEWS"
+            />
+        <service android:name=".widget.GetChatroomsListService" />
     </application>
 
 </manifest>

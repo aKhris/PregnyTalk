@@ -109,6 +109,10 @@ public class ImprovedMapFragment extends SupportMapFragment
     // window with chat information while tapping on some marker on the Google Map.
     private HashMap<Marker, ChatRoom> mChatMarkerMap;
 
+    // Flag not to show new marker right after user clicks on the map area to close previous marker's
+    // info window
+    private boolean mInfoWindowIsShowed;
+
 
     /**
      * Creating new instance of ImprovedMapFragment
@@ -234,6 +238,10 @@ public class ImprovedMapFragment extends SupportMapFragment
 
     @Override
     public void onMapClick(LatLng latLng) {
+        if(mInfoWindowIsShowed){
+            mInfoWindowIsShowed=false;
+            return;
+        }
         Bundle bundle = new Bundle();
         bundle.putParcelable(LOADER_BUNDLE_LATLNG, latLng);
         if(getContext()!=null && NetworkUtils.isOnline(getContext())) {
@@ -536,6 +544,7 @@ public class ImprovedMapFragment extends SupportMapFragment
             }
 
         }
+        mInfoWindowIsShowed=true;
         return infoWindow;
     }
 

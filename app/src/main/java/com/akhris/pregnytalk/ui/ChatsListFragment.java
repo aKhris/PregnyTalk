@@ -1,23 +1,30 @@
 package com.akhris.pregnytalk.ui;
 
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BaseTransientBottomBar;
 import android.support.design.widget.Snackbar;
+import android.support.v4.widget.NestedScrollView;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.TextView;
 
 import com.akhris.pregnytalk.MainActivity;
 import com.akhris.pregnytalk.R;
+import com.akhris.pregnytalk.adapters.AdaptersClickListeners.ItemClickListener;
 import com.akhris.pregnytalk.adapters.ChatsListAdapter;
-import com.akhris.pregnytalk.adapters.ItemClickListener;
 import com.akhris.pregnytalk.contract.ChatRoom;
 import com.akhris.pregnytalk.contract.FirebaseContract;
 import com.google.firebase.database.ChildEventListener;
@@ -32,21 +39,30 @@ import java.util.Map;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import butterknife.Optional;
 
 /**
  * Fragment representing list of chats the user takes part in (showed on the app start)
  */
 public class ChatsListFragment extends NavigationFragment
-    implements CreateChatFragment.Callback, ItemClickListener, SwipeableRecyclerView.SwipeCallbacks, NavigationManagerCallback {
+    implements CreateChatFragment.Callback, ItemClickListener, SwipeableRecyclerView.SwipeCallbacks, NavigationManagerCallback, MenuItem.OnMenuItemClickListener {
+
+
 
     @BindView(R.id.toolbar) Toolbar mToolbar;
-    @BindView(R.id.rv_chats_list)
-    SwipeableRecyclerView mChatsList;
+    @BindView(R.id.rv_chats_list) SwipeableRecyclerView mChatsList;
+    @Nullable @BindView(R.id.nsv_chats_list) NestedScrollView mNestedChatsList;
     @Nullable @BindView(R.id.fl_chat_container) FrameLayout mChatContainer;
+    @Nullable @BindView(R.id.tv_chats_list_hint) TextView mHint;
 
     // Argument passed to new instance of a fragment
     private static final String ARG_CHAT_ROOM_ID = "chat_room_id";
     private String mNavigateToChatRoomId;
+
+    private static final String BUNDLE_CURRENT_CHAT_ROOM_ID = "current_chat_room_id";
+    private String mCurrentChatRoomId;
+    private String mLoadOnStartChatRoomId;
+    private MenuItem mInfoItem;
 
     // Firebase
     private DatabaseReference mRoomMetaDataReference;
@@ -55,6 +71,12 @@ public class ChatsListFragment extends NavigationFragment
 
     // RecyclerView's adapter
     private ChatsListAdapter mAdapter;
+
+    // Saving scroll position on screen rotation
+    private static final String BUNDLE_SCROLL_POSITION = "scroll_position";
+    // Waiting this time before setting saved scroll position to NestedScrollView
+    // During this time the list has to be populated with items
+    private static final int DELAY_SCROLL_MILLIS = 1000;
 
     // Creating new instance of fragment with passing chatroom's ID as a parameter
     // (used to load a chat room right after loading it - in Master-Detail-Flow mode)
@@ -72,6 +94,15 @@ public class ChatsListFragment extends NavigationFragment
     public ChatsListFragment() {
         // Required empty public constructor
     }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if(context instanceof Callback){
+            mLoadOnStartChatRoomId = ((Callback)context).getChatIDToShowOnStart();
+        }
+    }
+
 
     /**
      * Returning an instance of ChatRoom class with chatroom id assigned
@@ -99,8 +130,20 @@ public class ChatsListFragment extends NavigationFragment
         if(getArguments()!=null && getArguments().containsKey(ARG_CHAT_ROOM_ID)){
             mNavigateToChatRoomId = getArguments().getString(ARG_CHAT_ROOM_ID);
         }
+        if(savedInstanceState!=null){
+            mCurrentChatRoomId = savedInstanceState.getString(BUNDLE_CURRENT_CHAT_ROOM_ID, null);
+        }
         mAdapter = new ChatsListAdapter(this);
         setupReferences();
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.menu_chatslist_tablet, menu);
+        menu.findItem(R.id.action_add_new_chat).setOnMenuItemClickListener(this);
+        mInfoItem = menu.findItem(R.id.action_info);
+        mInfoItem.setOnMenuItemClickListener(this);
     }
 
     /**
@@ -115,15 +158,38 @@ public class ChatsListFragment extends NavigationFragment
         View rootView = inflater.inflate(R.layout.fragment_chats_list, container, false);
         ButterKnife.bind(this, rootView);
         mToolbar.setTitle(R.string.toolbar_title_chatslistfragment);
-        mChatsList.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
+        // Set menu instead of floating action button in tablet mode:
+        setHasOptionsMenu(mChatContainer!=null);
+
+
+        LinearLayoutManager manager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
+        mChatsList.setLayoutManager(manager);
+        mChatsList.setItemAnimator(null);
         mChatsList.setAdapter(mAdapter);
+        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(mChatsList.getContext(), manager.getOrientation());
         mChatsList.initSwiping(this);
+        mChatsList.addItemDecoration(dividerItemDecoration);
+
+        if(savedInstanceState!=null && savedInstanceState.containsKey(BUNDLE_SCROLL_POSITION)) {
+            if(mNestedChatsList!=null) {
+                int[] scrollPos = savedInstanceState.getIntArray(BUNDLE_SCROLL_POSITION);
+                if (scrollPos != null) {
+                    mNestedChatsList.postDelayed(() -> mNestedChatsList.scrollTo(scrollPos[0], scrollPos[1]), DELAY_SCROLL_MILLIS);
+                }
+            } else {
+                int visiblePos = savedInstanceState.getInt(BUNDLE_SCROLL_POSITION);
+                if(visiblePos>RecyclerView.NO_POSITION){
+                    mChatsList.postDelayed(()->manager.scrollToPosition(visiblePos), DELAY_SCROLL_MILLIS);
+                }
+            }
+        }
         return rootView;
     }
 
     /**
      * Clicking on floating action button: show dialog to add new chat
      */
+    @Optional
     @OnClick(R.id.fab_add_new_chat)
     public void addNewChat(){
         CreateChatFragment
@@ -163,6 +229,11 @@ public class ChatsListFragment extends NavigationFragment
                 public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                     String chatRoomId = dataSnapshot.getKey();
                     if(chatRoomId==null){return;}
+                    if(chatRoomId.equals(mLoadOnStartChatRoomId)){
+                        navigateToChat(chatRoomId);
+                        mLoadOnStartChatRoomId = null;
+                        return;
+                    }
                     mRoomMetaDataReference
                             .child(chatRoomId)
                             .addListenerForSingleValueEvent(new ValueEventListener() {
@@ -184,9 +255,10 @@ public class ChatsListFragment extends NavigationFragment
                                     mAdapter.addChatRoom(chatRoom);
 
                                     if (mChatContainer!=null && chatRoomId.equals(mNavigateToChatRoomId)){
-                                        getNavigationManager().navigateToChat(chatRoomId, getChildFragmentManager());
+                                        navigateToChat(chatRoomId);
                                         mNavigateToChatRoomId = null;
                                     }
+
                                 }
 
                                 @Override public void onCancelled(@NonNull DatabaseError databaseError) { }
@@ -233,10 +305,21 @@ public class ChatsListFragment extends NavigationFragment
     @Override
     public void onItemClick(int position) {
         String chatRoomId = mAdapter.getChatRoomId(position);
+        navigateToChat(chatRoomId);
+    }
+
+    private void navigateToChat(String chatRoomId){
+        this.mCurrentChatRoomId = chatRoomId;
         if(mChatContainer==null) {
             getNavigationManager().navigateToChat(chatRoomId);
         } else {
             getNavigationManager().navigateToChat(chatRoomId, getChildFragmentManager());
+        }
+        if(mInfoItem!=null && !mInfoItem.isVisible()){
+            mInfoItem.setVisible(true);
+        }
+        if(mHint!=null){
+            mHint.setVisibility(View.GONE);
         }
     }
 
@@ -252,9 +335,7 @@ public class ChatsListFragment extends NavigationFragment
         mAdapter.removeChatRoom(position);
         String deleteString = String.format(getString(R.string.chatroom_deleted_snackbar_text), chatRoom.getName());
         Snackbar deleteChatRoomBar = Snackbar.make(mChatsList, deleteString, Snackbar.LENGTH_LONG);
-        deleteChatRoomBar.setAction(R.string.snackbar_undo, v -> {
-                    mAdapter.addChatRoom(chatRoom);
-                }
+        deleteChatRoomBar.setAction(R.string.snackbar_undo, v -> mAdapter.addChatRoom(chatRoom)
             );
         deleteChatRoomBar.addCallback(new BaseTransientBottomBar.BaseCallback<Snackbar>() {
             @Override
@@ -283,5 +364,38 @@ public class ChatsListFragment extends NavigationFragment
         mAdapter.clear();
     }
 
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString(BUNDLE_CURRENT_CHAT_ROOM_ID, mCurrentChatRoomId);
+        if(mNestedChatsList!=null) {
+            outState.putIntArray(BUNDLE_SCROLL_POSITION, new int[]{mNestedChatsList.getScrollX(), mNestedChatsList.getScrollY()});
+        } else {
+            outState.putInt(BUNDLE_SCROLL_POSITION,
+                    ((LinearLayoutManager)mChatsList.getLayoutManager()).findFirstVisibleItemPosition());
+        }
+    }
 
+    @Override
+    public boolean onMenuItemClick(MenuItem item) {
+        if(item.getItemId()==R.id.action_add_new_chat){
+            addNewChat();
+            return true;
+        }
+        if(item.getItemId()==R.id.action_info){
+            if(mCurrentChatRoomId!=null){
+                getNavigationManager().navigateToChatInfo(mCurrentChatRoomId);
+            }
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Callback to get Chatroom's ID from MainActivity when user clicks on a widget list
+     * of chats and starts MainActivity with that chat id in the intent.
+     */
+    public interface Callback{
+        String getChatIDToShowOnStart();
+    }
 }

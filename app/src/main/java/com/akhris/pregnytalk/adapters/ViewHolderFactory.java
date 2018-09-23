@@ -13,6 +13,9 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.akhris.pregnytalk.R;
+import com.akhris.pregnytalk.adapters.AdaptersClickListeners.ContactsItemClickListener;
+import com.akhris.pregnytalk.adapters.AdaptersClickListeners.ItemClickListener;
+import com.akhris.pregnytalk.adapters.AdaptersClickListeners.MessageClickListener;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;

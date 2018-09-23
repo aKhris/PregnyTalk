@@ -5,6 +5,9 @@ import com.google.firebase.database.Exclude;
 
 import java.io.Serializable;
 
+/**
+ * Class representing PlaceData in Firebase Realtime Database
+ */
 public class PlaceData implements Serializable{
     private double lng;
     private double lat;

@@ -1,6 +1,12 @@
 package com.akhris.pregnytalk.contract;
 
-public class Message {
+import java.io.Serializable;
+
+/**
+ * Class representing Message in Firebase Realtime Database
+ */
+
+public class Message implements Serializable{
     private String messageId;
     private String userId;
     private String userName;

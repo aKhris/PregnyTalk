@@ -1,0 +1,25 @@
+<LinearLayout android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="@color/fragmentsBackground"
+    >
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/widget_layout_margin"
+        android:id="@+id/widget_tv_title"
+        android:layout_gravity="start"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:text="@string/widget_title"
+        android:textColor="@color/primaryDarkColor"
+         />
+
+<ListView
+    android:id="@+id/widget_lv_chats_list"
+    android:layout_width="match_parent"
+    android:layout_height="0dp"
+    android:layout_weight="1"/>
+</LinearLayout>

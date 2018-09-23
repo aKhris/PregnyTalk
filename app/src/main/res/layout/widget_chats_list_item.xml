@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    android:id="@+id/widget_ll_root_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    >
+    <TextView
+
+        android:id="@+id/widget_tv_chat_name"
+        style="@style/TextOverline"
+        android:layout_marginStart="@dimen/widget_horizontal_margin"
+        android:layout_marginLeft="@dimen/widget_horizontal_margin"
+        tools:text="Ждем чуда в марте 2019"
+        />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        >
+
+
+        <TextView
+            android:id="@+id/widget_tv_chat_user_name"
+            style="@style/TextFirstLine"
+            android:textSize="16sp"
+            tools:text="Julia"
+            android:layout_marginStart="@dimen/widget_horizontal_margin"
+            android:layout_marginLeft="@dimen/widget_horizontal_margin"
+            />
+
+        <TextView
+            android:id="@+id/widget_tv_chat_last_message"
+            style="@style/TextBottom"
+            tools:text="Hello everybody!"
+            android:layout_marginStart="@dimen/widget_horizontal_margin"
+            android:layout_marginLeft="@dimen/widget_horizontal_margin"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:maxLines="1"
+            android:ellipsize="end"
+            />
+        <TextView
+            android:id="@+id/widget_tv_chat_message_timestamp"
+            style="@style/TextOverline"
+            android:layout_marginEnd="@dimen/widget_horizontal_margin"
+            android:layout_marginRight="@dimen/widget_horizontal_margin"
+            tools:text="16:28"
+            />
+    </LinearLayout>
+
+
+
+</LinearLayout>

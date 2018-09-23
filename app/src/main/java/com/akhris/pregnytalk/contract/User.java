@@ -2,22 +2,38 @@ package com.akhris.pregnytalk.contract;
 
 import com.google.firebase.database.Exclude;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
+/**
+ * Class representing User in Firebase Realtime Database
+ */
 public class User {
 
     @Exclude
     private String uId;
 
+    // Name of the user
     private String name;
+
+    // User's picture
     private String pictureUrl;
+
+    // Map of users that this user added to it's contacts list
     private HashMap<String, String> contacts;   //<UserId,Name>
+
+    // Map of children
     private HashMap<String, Child> children;    //<ChildId, Child>
+
+    // Date of birth
     private Long birthDateMillis;
+
+    // Estimated delivery date
     private Long estimatedDateMillis;
+
+    // PlaceData object representing user's location
     private PlaceData userLocationPlaceData;
+
+    // PlaceData object representing hospital location
     private PlaceData hospitalLocationPlaceData;
 
     public User() {

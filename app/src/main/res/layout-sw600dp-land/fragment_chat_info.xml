@@ -29,33 +29,42 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical"
+            android:orientation="horizontal"
             >
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/rv_chat_info_list"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
                 />
             <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
                 android:layout_margin="@dimen/chat_info_layout_margin"
                 android:background="@color/iconGrayColor"
                 />
-            <TextView
-                android:textAppearance="@style/TextAppearance.AppCompat.Headline"
-                android:text="@string/chat_info_users"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="@dimen/chat_info_layout_margin"
-                android:layout_gravity="center_horizontal"
-                />
-            <FrameLayout
-                android:id="@+id/fl_chat_info_contacts_container"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
                 android:layout_weight="1"
-                />
+                >
+                <TextView
+                    android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+                    android:text="@string/chat_info_users"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="8dp"
+                    android:layout_gravity="center_horizontal"
+                    />
+                <FrameLayout
+                    android:id="@+id/fl_chat_info_contacts_container"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    />
+
+            </LinearLayout>
+
         </LinearLayout>
     </android.support.v4.widget.NestedScrollView>
 

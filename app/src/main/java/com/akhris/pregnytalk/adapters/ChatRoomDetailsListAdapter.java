@@ -12,7 +12,7 @@ import com.akhris.pregnytalk.utils.DateUtils;
 /**
  * RecyclerView Adapter representing chat room details
  */
-public class ChatRoomDetailsListAdapter  extends RecyclerView.Adapter<ViewHolderFactory.TwoLineWithIconItemViewHolder> implements ItemClickListener {
+public class ChatRoomDetailsListAdapter  extends RecyclerView.Adapter<ViewHolderFactory.TwoLineWithIconItemViewHolder> implements AdaptersClickListeners.ItemClickListener {
 
     // Position constants
     private static final int POSITION_CHAT_NAME=0;

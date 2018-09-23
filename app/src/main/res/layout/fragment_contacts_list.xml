@@ -2,7 +2,9 @@
 <FrameLayout
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="@color/fragmentsBackground"
+    >
     <com.akhris.pregnytalk.ui.SwipeableRecyclerView android:id="@+id/rv_contacts_list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

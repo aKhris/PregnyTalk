@@ -5,7 +5,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 
-import com.akhris.pregnytalk.contract.FirebaseContract;
 import com.akhris.pregnytalk.ui.ChatFragment;
 import com.akhris.pregnytalk.ui.ChatInfoFragment;
 import com.akhris.pregnytalk.ui.ChatsListFragment;
@@ -116,7 +115,7 @@ public class NavigationManager {
      * @param chatRoomID - the id of the chatroom in the Firebase Database
      */
     public void navigateToChat(String chatRoomID){
-            Fragment fragment = ChatFragment.newInstance(chatRoomID);
+            Fragment fragment = ChatFragment.newInstance(chatRoomID, false);
             popAllButRoot();
             navigateTo(fragment, false);
     }
@@ -131,7 +130,7 @@ public class NavigationManager {
         if(childFragmentManager==null) {
            navigateToChat(chatRoomID);
         } else {
-            Fragment fragment = ChatFragment.newInstance(chatRoomID);
+            Fragment fragment = ChatFragment.newInstance(chatRoomID, true);
             childFragmentManager
                     .beginTransaction()
                     .replace(R.id.fl_chat_container, fragment)
@@ -162,11 +161,20 @@ public class NavigationManager {
         navigateTo(fragment, false);
     }
 
+
     /**
-     * Navigate to the previous fragment in the stack
+     * Navigate to the previous fragment in the stack.
+     * Returns  true if there was fragment to navigate to.
+     *          false if there was no fragments;
      */
-    public void navigateBack(){
-        mFragmentManager.popBackStack();
+    public boolean navigateBack(){
+        int entryCount = mFragmentManager.getBackStackEntryCount();
+        if(entryCount>1) {
+            mFragmentManager.popBackStack();
+            return true;
+        } else {
+            return false;
+        }
     }
 
 }

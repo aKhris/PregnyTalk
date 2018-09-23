@@ -3,14 +3,19 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="horizontal"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/fragmentsBackground"
+    >
 <ImageButton
+    android:padding="@dimen/send_message_bar_padding"
     android:id="@+id/ib_send_message_image"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    app:srcCompat="@drawable/ic_image_white_24dp"
+    app:srcCompat="@drawable/ic_image_white_36dp"
     android:contentDescription="@string/content_description_attach_image"
     android:layout_gravity="center_vertical"
+    android:tint="@color/secondaryColor"
+    android:background="@android:color/transparent"
     />
 
     <EditText
@@ -25,10 +30,14 @@
         />
 
     <ImageButton
+        android:padding="@dimen/send_message_bar_padding"
         android:id="@+id/ib_send_message"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:srcCompat="@drawable/ic_send_white_24dp"
+        app:srcCompat="@drawable/ic_send_white_36dp"
         android:layout_gravity="center_vertical"
+        android:tint="@color/secondaryColor"
+        android:background="@android:color/transparent"
+        android:contentDescription="@string/content_description_send_message_button"
         />
 </LinearLayout>

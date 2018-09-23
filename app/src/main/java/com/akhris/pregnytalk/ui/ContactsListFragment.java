@@ -3,6 +3,8 @@ package com.akhris.pregnytalk.ui;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.BaseTransientBottomBar;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -13,7 +15,7 @@ import android.widget.ProgressBar;
 
 import com.akhris.pregnytalk.MainActivity;
 import com.akhris.pregnytalk.R;
-import com.akhris.pregnytalk.adapters.ContactsItemClickListener;
+import com.akhris.pregnytalk.adapters.AdaptersClickListeners.ContactsItemClickListener;
 import com.akhris.pregnytalk.adapters.ContactsListAdapter;
 import com.akhris.pregnytalk.contract.ChatRoom;
 import com.akhris.pregnytalk.contract.FirebaseContract;
@@ -38,8 +40,9 @@ import butterknife.ButterKnife;
 public class ContactsListFragment extends Fragment
         implements ContactsItemClickListener, SwipeableRecyclerView.SwipeCallbacks {
 
-    @BindView(R.id.rv_contacts_list)
-    SwipeableRecyclerView mContactsList;
+
+
+    @BindView(R.id.rv_contacts_list) SwipeableRecyclerView mContactsList;
     @BindView(R.id.pb_contacts_list_progressbar) ProgressBar mProgressBar;
 
     // Argument passed to new instance of a fragment
@@ -50,10 +53,18 @@ public class ContactsListFragment extends Fragment
     private Query mContactsQuery;
     private ContactsListAdapter mAdapter;
     private ChildEventListener mMyContactsListener;
+    private DatabaseReference mUserContactsReference;
     private DatabaseReference mRoomMetaDataReference;
 
     //Callback is used to navigate to chat when clicked on a chat button in a contacts list
     private NavigationManagerCallback mCallback;
+
+    // Saving scroll position on screen rotation
+    private static final String BUNDLE_SCROLL_POSITION = "scroll_position";
+    // Waiting this time before setting saved scroll position to NestedScrollView
+    // During this time the list has to be populated with items
+    private static final int DELAY_SCROLL_MILLIS = 1000;
+
 
     /**
      * Making new instance of ContactsListFragment
@@ -100,11 +111,21 @@ public class ContactsListFragment extends Fragment
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_contacts_list, container, false);
         ButterKnife.bind(this, rootView);
-        mAdapter = new ContactsListAdapter(this);
+        boolean searchInUserContacts = mChildPath.contains(FirebaseContract.CHILD_USER_CONTACTS);
+        mAdapter = new ContactsListAdapter(this, searchInUserContacts);
         mContactsList.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
         mContactsList.setAdapter(mAdapter);
-        mContactsList.initSwiping(this);
+        if(searchInUserContacts) {
+            mContactsList.initSwiping(this);
+        }
         setupReferences();
+        if(savedInstanceState!=null && savedInstanceState.containsKey(BUNDLE_SCROLL_POSITION)) {
+                int visiblePos = savedInstanceState.getInt(BUNDLE_SCROLL_POSITION);
+                if(visiblePos>RecyclerView.NO_POSITION){
+                    mContactsList.postDelayed(()->
+                            mContactsList.getLayoutManager().scrollToPosition(visiblePos), DELAY_SCROLL_MILLIS);
+                }
+        }
         return rootView;
     }
 
@@ -114,7 +135,7 @@ public class ContactsListFragment extends Fragment
     private void setupReferences() {
         //Make reference to given contacts map <String, String>
         //with UserId as a Key String and user name as a Value String
-        DatabaseReference mUserContactsReference =
+        mUserContactsReference =
                 FirebaseDatabase
                         .getInstance()
                         .getReference()
@@ -292,6 +313,13 @@ public class ContactsListFragment extends Fragment
         navigateToPrivateChatRoom(addedChatroomId);
     }
 
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(BUNDLE_SCROLL_POSITION,
+                ((LinearLayoutManager)mContactsList.getLayoutManager()).findFirstVisibleItemPosition());
+    }
+
     /**
      * Showing user info when clicking on list item
      */
@@ -305,6 +333,25 @@ public class ContactsListFragment extends Fragment
 
     @Override
     public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
+        int position = viewHolder.getAdapterPosition();
+        User user = mAdapter.getUser(position);
+        String id = user.getuId();
+        mAdapter.removeUser(position);
 
+        String deleteString = String.format(getString(R.string.Contact_deleted_snackbar_text), user.getName());
+        Snackbar deleteUserSnackBar = Snackbar.make(mContactsList, deleteString, Snackbar.LENGTH_LONG);
+        deleteUserSnackBar.setAction(R.string.snackbar_undo, v -> mAdapter.addUser(user)
+        );
+        deleteUserSnackBar.addCallback(new BaseTransientBottomBar.BaseCallback<Snackbar>() {
+            @Override
+            public void onDismissed(Snackbar transientBottomBar, int event) {
+                if(event==DISMISS_EVENT_ACTION){ return; }
+                    mUserContactsReference
+                        .child(id)
+                        .removeValue();
+                deleteUserSnackBar.removeCallback(this);
+            }
+        });
+        deleteUserSnackBar.show();
     }
 }

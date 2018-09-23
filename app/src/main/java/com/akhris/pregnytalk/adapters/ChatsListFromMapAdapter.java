@@ -10,7 +10,7 @@ import com.akhris.pregnytalk.contract.ChatRoom;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ChatsListFromMapAdapter extends RecyclerView.Adapter<ViewHolderFactory.ChatsListItemFromMapHolder> implements ItemClickListener {
+public class ChatsListFromMapAdapter extends RecyclerView.Adapter<ViewHolderFactory.ChatsListItemFromMapHolder> implements AdaptersClickListeners.ItemClickListener {
 
     private List<ChatRoom> mChatRooms;
 

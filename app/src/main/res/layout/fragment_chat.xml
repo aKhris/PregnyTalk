@@ -25,6 +25,7 @@
         android:layout_height="match_parent"
         android:orientation="vertical"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        android:background="@color/chatFragmentBackground"
         >
 
 
@@ -40,7 +41,7 @@
 
         <include layout="@layout/send_message_bar"
             android:id="@+id/include_send_message"
-            android:layout_height="48dp"
+            android:layout_height="@dimen/chat_fragment_send_message_bar_height"
             android:layout_width="match_parent"
             app:layout_constraintBottom_toBottomOf="parent"
             />

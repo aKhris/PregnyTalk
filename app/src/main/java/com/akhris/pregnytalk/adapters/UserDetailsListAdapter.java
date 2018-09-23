@@ -19,7 +19,7 @@ import java.util.Map;
  * Adapter representing user details in a list form
  */
 public class UserDetailsListAdapter extends RecyclerView.Adapter<TwoLineWithIconItemViewHolder>
-        implements ItemClickListener, ChildrenClickListener {
+        implements AdaptersClickListeners.ItemClickListener {
 
     // Position constants
     private static final int POSITION_DATE_OF_BIRTH=0;
@@ -193,18 +193,9 @@ public class UserDetailsListAdapter extends RecyclerView.Adapter<TwoLineWithIcon
                 mCallback.onHospitalLocationClick(mUser.getHospitalLocationPlaceData());
                 break;
             case POSITION_CHILDREN:
+                mCallback.onAddChildClick();
                 break;
         }
-    }
-
-    @Override
-    public void onAddBoyClick() {
-        mCallback.onAddChildClick(Child.SEX_MALE);
-    }
-
-    @Override
-    public void onAddGirlClick() {
-        mCallback.onAddChildClick(Child.SEX_FEMALE);
     }
 
     /**
@@ -215,7 +206,7 @@ public class UserDetailsListAdapter extends RecyclerView.Adapter<TwoLineWithIcon
         void onHospitalLocationClick(PlaceData placeData);
         void onBirthDateClick(Long birthDateMillis);
         void onEstimatedDateClick(Long estimatedDateMillis);
-        void onAddChildClick(String sex);
+        void onAddChildClick();
     }
 
 }

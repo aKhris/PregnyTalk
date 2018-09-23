@@ -24,6 +24,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        android:background="@color/fragmentsBackground"
         >
 
         <com.akhris.pregnytalk.ui.SwipeableRecyclerView
@@ -34,7 +35,17 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/vertical_divider"
+            />
+        <View
+            android:id="@+id/vertical_divider"
+            android:layout_width="@dimen/chats_list_divider_width"
+            android:layout_height="match_parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@id/rv_chats_list"
             app:layout_constraintEnd_toStartOf="@id/fl_chat_container"
+            android:background="@color/lightGrayColor"
             />
         <FrameLayout
             android:id="@+id/fl_chat_container"
@@ -43,18 +54,24 @@
             app:layout_constraintHorizontal_weight="2"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@id/rv_chats_list"
+            app:layout_constraintStart_toEndOf="@id/vertical_divider"
             app:layout_constraintEnd_toEndOf="parent"
-            />
-        <android.support.design.widget.FloatingActionButton
-            android:id="@+id/fab_add_new_chat"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="@dimen/fab_margin"
-            app:srcCompat="@drawable/ic_message_white_24dp"
-            app:layout_constraintEnd_toEndOf="@id/rv_chats_list"
-            app:layout_constraintBottom_toBottomOf="@id/rv_chats_list"
-            />
+            >
+            <TextView
+                android:id="@+id/tv_chats_list_hint"
+                android:drawableBottom="@drawable/ic_chat_bubble_24dp"
+                android:drawablePadding="48dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+                android:text="@string/chats_list_hint_text"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:alpha="0.2"
+                />
+
+        </FrameLayout>
+
     </android.support.constraint.ConstraintLayout>
 
 

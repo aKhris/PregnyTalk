@@ -3,7 +3,9 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="@color/chatFragmentBackground"
+    >
 
 
     <android.support.v7.widget.RecyclerView
@@ -17,7 +19,7 @@
 
     <include layout="@layout/send_message_bar"
         android:id="@+id/include_send_message"
-        android:layout_height="48dp"
+        android:layout_height="@dimen/chat_fragment_send_message_bar_height"
         android:layout_width="match_parent"
         app:layout_constraintBottom_toBottomOf="parent"
         />

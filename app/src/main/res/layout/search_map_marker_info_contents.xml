@@ -23,6 +23,6 @@
         android:layout_height="wrap_content"
         android:text="@string/marker_info_click_to_create"
         android:textAppearance="@style/TextAppearance.AppCompat.Tooltip"
-        android:layout_margin="8dp"
+        android:layout_margin="@dimen/info_window_layout_margin"
         />
 </LinearLayout>

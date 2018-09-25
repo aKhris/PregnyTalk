@@ -1,5 +1,6 @@
 package com.akhris.pregnytalk;
 
+import android.content.Context;
 import android.support.annotation.IdRes;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -12,6 +13,7 @@ import com.akhris.pregnytalk.ui.ContactsFragment;
 import com.akhris.pregnytalk.ui.ContactsListFragment;
 import com.akhris.pregnytalk.ui.MapAndListFragment;
 import com.akhris.pregnytalk.ui.SettingsFragment;
+import com.mikepenz.aboutlibraries.LibsBuilder;
 
 /**
  * Class to handle navigation in an app
@@ -50,7 +52,7 @@ public class NavigationManager {
     /**
      * Pop all fragments from the stack (including root fragment)
      */
-    private void popAll(){
+    public void popAll(){
         if(mFragmentManager==null){return;}
         mFragmentManager.popBackStack(BACK_STACK_ROOT_TAG, FragmentManager.POP_BACK_STACK_INCLUSIVE);
     }
@@ -161,6 +163,15 @@ public class NavigationManager {
         navigateTo(fragment, false);
     }
 
+    /**
+     * Navigate to About screen where 3rd party libraries and their licenses are shown
+     */
+    public void navigateToAbout(Context context) {
+        new LibsBuilder()
+                .withActivityTitle(context.getString(R.string.nav_title_about))
+                .withActivityTheme(R.style.AppTheme)
+                .start(context);
+    }
 
     /**
      * Navigate to the previous fragment in the stack.
@@ -176,5 +187,6 @@ public class NavigationManager {
             return false;
         }
     }
+
 
 }

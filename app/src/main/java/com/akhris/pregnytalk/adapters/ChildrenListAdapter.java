@@ -59,6 +59,10 @@ public class ChildrenListAdapter extends RecyclerView.Adapter<ViewHolderFactory.
             holder.bounce();
             wasBouncedAfterAdapterCreation = true;
         }
+
+        if(holder.wasSwiped){
+            holder.releaseSwiped();
+        }
     }
 
     @Override
@@ -78,8 +82,10 @@ public class ChildrenListAdapter extends RecyclerView.Adapter<ViewHolderFactory.
     public void swipeChildren(User mUser) {
         if(mUser.getChildren()!=null){
             mChildren = new ArrayList<>(mUser.getChildren().values());
-            notifyDataSetChanged();
+        } else {
+            mChildren = new ArrayList<>();
         }
+        notifyDataSetChanged();
     }
 
     public interface ChildCallback{

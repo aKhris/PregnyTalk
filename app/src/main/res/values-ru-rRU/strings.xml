@@ -1,6 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">PregnyTalk</string>
+    <string name="nav_header_title">Пользователь</string>
+    <string name="nav_header_subtitle">e-mail/телефон</string>
+    <string name="nav_header_desc">Навигация</string>
+
+
+    <string name="nav_header_desc_info">Информация о пользователе</string>
+    <string name="action_info">Информация</string>
+    <string name="chat_info_chat_type_title">Видимость беседы</string>
+    <string name="chat_info_chat_type_public">Публичная</string>
+    <string name="chat_info_chat_type_private">Приватная</string>
+    <string name="chat_info_location_title">Расположение беседы</string>
+    <string name="chat_info_created_at">Создана</string>
+    <string name="chat_info_description">Описание</string>
+    <string name="chat_info_name">Название беседы</string>
+    <string name="chat_info_users">Пользователи:</string>
+
     <string name="chat_fragment_toolbar_subtitle_format_string">Пользователи: %d</string>
     <string name="chat_with_format_string">Беседа с %s</string>
     <string name="chat_join_dialog_title">Вы хотите присоединиться к беседе?</string>
@@ -13,7 +28,7 @@
     <string name="chat_info_empty_location_and_message">добавить расположение</string>
     <string name="chat_info_empty_name_message">Пожалуйста, укажите имя беседы</string>
     <string name="chat_info_button_ok">Добавить новую беседу</string>
-    <string name="chat_create_dialog_title">Создать новую беседу...</string>
+    <string name="chat_create_dialog_title">Создать новую беседу…</string>
     <string name="chat_info_enter_chat_name_hint">имя беседы</string>
     <string name="chat_info_location_query_hint">расположение беседы</string>
     <string name="user_info_username_hint">Введите ваше имя</string>
@@ -37,4 +52,45 @@
     <string name="content_description_user_avatar">Фото пользователя</string>
     <string name="hint_write_your_message">Напишите сообщение…</string>
     <string name="content_description_attach_image">Прикрепить изображение</string>
+
+    <string name="chat_info_fragment_title">Подробности беседы</string>
+    <string name="chat_info_edit_name">Изменить название</string>
+    <string name="chat_info_edit_description">Изменить описание</string>
+    <string name="chat_info_edit_button_ok">ОК</string>
+    <string name="add_child_dialog_title">Добавить ребенка</string>
+    <string name="add_child_dialog_name_hint">Имя ребенка</string>
+    <string name="sex_male">Мужской</string>
+    <string name="sex_female">Женский</string>
+    <string name="add_child_add_button">Добавить</string>
+    <string name="add_child_dialog_date_of_birth_hint">Дата рождения</string>
+    <string name="picture_chooser_title">Пожалуйста, выберите изображение</string>
+    <string name="chatroom_deleted_snackbar_text">Беседа %s удалена.</string>
+    <string name="snackbar_undo">отмена</string>
+    <string name="warning_check_internet">Пожалуйста, проверьте соединение!</string>
+    <string name="marker_info_click_to_create">Нажмите, чтобы начать беседу здесь</string>
+    <string name="user_info_boys_count_format">Мальчики: %d</string>
+    <string name="user_info_girls_count_format">Девочки: %d</string>
+    <string name="pref_category_ui_hints_title">Подсказки интерфейса</string>
+    <string name="pref_ui_hints_title">Сбросить подсказки интерфейса</string>
+    <string name="pref_ui_hints_summary">И они будут показаны еще несколько раз</string>
+    <string name="pref_category_auth_title">Аутентификация</string>
+    <string name="pref_logout_title">Выход</string>
+    <string name="pref_logout_summary">Вам нужно будет снова авторизоваться</string>
+    <string name="settings_hints_reset_message">Подсказки сброшены</string>
+    <string name="chatroom_name_format_string">Беседа с %s</string>
+    <string name="action_add_new_chat_title">Добавить новую беседу</string>
+    <string name="chats_list_hint_text">Выберите чат/nслева</string>
+    <string name="contacts_you">(Вы)</string>
+    <string name="widget_title">@string/app_name</string>
+    <string name="content_description_user_add_to_contacts">Добавить пользователя в контакты</string>
+    <string name="content_description_contacts_list_send_message">Отправить сообщение</string>
+    <string name="content_description_contacts_list_users_picture">Фото пользователя</string>
+    <string name="content_description_list_item_icon">Картинка пункта списка</string>
+    <string name="content_description_message_picture">Картинка в сообщении</string>
+    <string name="content_description_send_message_button">Нажмите для отправки сообщения</string>
+    <string name="content_description_delete_list_item">Удалить пункт списка</string>
+    <string name="Contact_deleted_snackbar_text">Контакт %s удален.</string>
+    <string name="snackbar_retry">Повторить</string>
+    <string name="add_chat_hint_text">Нет чатов в списке.\nНачните чат или \nприсоединитесь к другим!</string>
+    <string name="nav_title_about">О программе</string>
 </resources>

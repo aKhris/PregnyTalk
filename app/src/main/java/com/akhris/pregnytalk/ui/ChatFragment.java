@@ -9,6 +9,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -52,6 +53,7 @@ public class ChatFragment extends NavigationFragment
 {
 
 
+    private static final String TAG = "ChatFragment";
 
     @Nullable @BindView(R.id.toolbar) Toolbar mToolbar;
     @BindView(R.id.rv_chat) RecyclerView mChatList;
@@ -225,7 +227,9 @@ public class ChatFragment extends NavigationFragment
                 @Override public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {}
                 @Override public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {}
                 @Override public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {}
-                @Override public void onCancelled(@NonNull DatabaseError databaseError) {}
+                @Override public void onCancelled(@NonNull DatabaseError databaseError) {
+                    Log.e(TAG, "onCancelled: ChatsListFragment error:\n", databaseError.toException());
+                }
             };
         }
 

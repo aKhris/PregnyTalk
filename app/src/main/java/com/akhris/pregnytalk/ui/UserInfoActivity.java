@@ -18,6 +18,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -40,6 +41,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
@@ -59,6 +61,7 @@ public class UserInfoActivity extends AppCompatActivity
         ChildrenListAdapter.ChildCallback,
         SwipeableRecyclerView.SwipeCallbacks {
 
+    private static final String TAG = "UserInfoActivity";
     @BindView(R.id.rv_user_info_details_list) RecyclerView userInfoList;
     @BindView(R.id.rv_user_info_children_list) SwipeableRecyclerView childrenList;
     @BindView(R.id.iv_user_info_picture) ImageView userInfoPicture;
@@ -107,6 +110,7 @@ public class UserInfoActivity extends AppCompatActivity
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_info);
+        supportPostponeEnterTransition();
         ButterKnife.bind(this);
         if(getIntent()==null){finish();}                        // Activity must have User ID in
         if(!getIntent().hasExtra(EXTRA_USER_ID)){finish();}     // the starting intent
@@ -312,17 +316,34 @@ public class UserInfoActivity extends AppCompatActivity
                         mUser = dataSnapshot.getValue(User.class);
                         mUser.setuId(dataSnapshot.getKey());
                         if(mAdapter==null){
-                            initAdapters();
+                            initDetailsAdapter();
                         } else {
                             mAdapter.swipeUser(mUser);
+                        }
+                        if(mChildrenAdapter==null){
+                            initChildrenAdapter();
+                        } else {
                             mChildrenAdapter.swipeChildren(mUser);
                         }
+
                         if(mUser.getPictureUrl()!=null && mUser.getPictureUrl().length()>0) {
                             Picasso.get()
                                     .load(mUser.getPictureUrl())
                                     .fit()
                                     .transform(new ImageUtils.CircleTransform())
-                                    .into(userInfoPicture);
+                                    .into(userInfoPicture, new Callback() {
+                                        @Override
+                                        public void onSuccess() {
+                                            supportStartPostponedEnterTransition();
+                                        }
+
+                                        @Override
+                                        public void onError(Exception e) {
+                                            supportStartPostponedEnterTransition();
+                                        }
+                                    });
+                        } else {
+                            supportStartPostponedEnterTransition();
                         }
                         if(!mUser.getName().equals(userInfoName.getText().toString())) {
                             userInfoName.setText(mUser.getName());
@@ -340,7 +361,7 @@ public class UserInfoActivity extends AppCompatActivity
 
                 @Override
                 public void onCancelled(@NonNull DatabaseError databaseError) {
-
+                    Log.e(TAG, "onCancelled: ChatsListFragment error:\n", databaseError.toException());
                 }
             };
             mUserReference.addValueEventListener(mUserEventListener);
@@ -357,7 +378,7 @@ public class UserInfoActivity extends AppCompatActivity
 
                 @Override
                 public void onCancelled(@NonNull DatabaseError databaseError) {
-
+                    Log.e(TAG, "onCancelled: ChatsListFragment error:\n", databaseError.toException());
                 }
             };
             mUserInMyContactsReference.addValueEventListener(mMyContactsListener);
@@ -366,6 +387,8 @@ public class UserInfoActivity extends AppCompatActivity
 
 
     }
+
+
 
     /**
      * Checks if user in contacts to set appropriate icon to the "add to contacts" button
@@ -477,13 +500,18 @@ public class UserInfoActivity extends AppCompatActivity
 
     /**
      * Setting adapter for user info recycler view.
-     * And additional adapter for children list.
      */
-    private void initAdapters(){
+    private void initDetailsAdapter(){
         mAdapter = new UserDetailsListAdapter(mUser);
         mAdapter.setCallback(UserInfoActivity.this);
         userInfoList.setLayoutManager(new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.VERTICAL, false));
         userInfoList.setAdapter(mAdapter);
+    }
+
+    /**
+     * Setting adapter for children list
+     */
+    private void initChildrenAdapter() {
         if(mUid.equals(MainActivity.sMyUid) && mUser.getChildren()!=null){
             childrenList.setLayoutManager(new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.VERTICAL, false));
             mChildrenAdapter = new ChildrenListAdapter(new ArrayList<>(mUser.getChildren().values()), this);
@@ -491,6 +519,8 @@ public class UserInfoActivity extends AppCompatActivity
             childrenList.initSwiping(this);
         }
     }
+
+
 
     /**
      * Part of UserDetailsCallback.
@@ -514,6 +544,29 @@ public class UserInfoActivity extends AppCompatActivity
     @Override
     public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
         Child childToDelete = mChildrenAdapter.getChild(viewHolder.getAdapterPosition());
-        // TODO: 20.09.18 actually remove it from database here
+        mUserReference
+                .child(FirebaseContract.CHILD_USER_CHILDREN)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        for (DataSnapshot childSnapshot:dataSnapshot.getChildren()) {
+                            Child child = childSnapshot.getValue(Child.class);
+                            if(child==null){continue;}
+                            if(!child.equals(childToDelete)){continue;}
+                            String key = childSnapshot.getKey();
+                            if(key==null){continue;}
+                            mUserReference
+                                    .child(FirebaseContract.CHILD_USER_CHILDREN)
+                                    .child(key)
+                                    .removeValue();
+                            break;
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                        Log.e(TAG, "onCancelled: UserInfoActivity error:\n", databaseError.toException());
+                    }
+                });
     }
 }

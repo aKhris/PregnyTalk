@@ -9,6 +9,7 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -60,6 +61,8 @@ public class ImprovedMapFragment extends SupportMapFragment
         GoogleMap.OnInfoWindowClickListener,
         CreateChatFragment.Callback{
 
+    private static final String TAG = "ImprovedMapFragment";
+
     // Constant field to distinguish between icon res and standard marker icon.
     public static final int STANDARD_ICON =-1;
 
@@ -72,6 +75,7 @@ public class ImprovedMapFragment extends SupportMapFragment
 
     // Argument passed to new instance of a fragment
     private static final String ARG_SHOW_CHAT_MARKERS = "bundle_show_chat_markers";
+
     private boolean mShowChatMarkers =false;
 
     // Instance of outer custom SearchView to use with this map
@@ -463,7 +467,7 @@ public class ImprovedMapFragment extends SupportMapFragment
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-
+                Log.e(TAG, "onCancelled: ChatsListFragment error:\n", databaseError.toException());
             }
         });
     }
@@ -530,7 +534,8 @@ public class ImprovedMapFragment extends SupportMapFragment
 
         } else {
             //inflate info window for just a click marker
-            infoWindow = getLayoutInflater().inflate(R.layout.search_map_marker_info_contents, null);
+            if(getActivity()==null){return null;}
+            infoWindow = getActivity().getLayoutInflater().inflate(R.layout.search_map_marker_info_contents, null);
 
             TextView title = infoWindow.findViewById(R.id.title);
             TextView snippet = infoWindow.findViewById(R.id.snippet);

@@ -8,6 +8,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -41,6 +42,7 @@ public class ContactsListFragment extends Fragment
         implements ContactsItemClickListener, SwipeableRecyclerView.SwipeCallbacks {
 
 
+    private static final String TAG = "ContactsListFragment";
 
     @BindView(R.id.rv_contacts_list) SwipeableRecyclerView mContactsList;
     @BindView(R.id.pb_contacts_list_progressbar) ProgressBar mProgressBar;
@@ -194,14 +196,18 @@ public class ContactsListFragment extends Fragment
                             }
                         }
 
-                        @Override public void onCancelled(@NonNull DatabaseError databaseError) { }
+                        @Override public void onCancelled(@NonNull DatabaseError databaseError) {
+                            Log.e(TAG, "onCancelled: ChatsListFragment error:\n", databaseError.toException());
+                        }
                     });
                 }
 
                 @Override public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) { }
                 @Override public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) { }
                 @Override public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) { }
-                @Override public void onCancelled(@NonNull DatabaseError databaseError) { }
+                @Override public void onCancelled(@NonNull DatabaseError databaseError) {
+                    Log.e(TAG, "onCancelled: ChatsListFragment error:\n", databaseError.toException());
+                }
             };
             mContactsQuery.addChildEventListener(mMyContactsListener);
         }

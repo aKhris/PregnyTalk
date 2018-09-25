@@ -28,11 +28,27 @@
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         android:background="@color/fragmentsBackground"
         >
-
-        <com.akhris.pregnytalk.ui.SwipeableRecyclerView
-            android:id="@+id/rv_chats_list"
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+            android:layout_height="match_parent">
+            <com.akhris.pregnytalk.ui.SwipeableRecyclerView
+                android:id="@+id/rv_chats_list"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+
+            <TextView
+                android:id="@+id/tv_add_chat_hint"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+                android:text="@string/add_chat_hint_text"
+                android:layout_gravity="center_horizontal"
+                android:gravity="center"
+                android:alpha="0.2"
+                android:visibility="visible"
+                />
+        </FrameLayout>
+
 
     </android.support.v4.widget.NestedScrollView>
 

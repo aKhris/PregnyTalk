@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.util.Pair;
@@ -24,6 +25,7 @@ import com.akhris.pregnytalk.ui.ChatsListFragment;
 import com.akhris.pregnytalk.ui.NavigationCallbacks;
 import com.akhris.pregnytalk.ui.UserInfoActivity;
 import com.akhris.pregnytalk.utils.ImageUtils;
+import com.akhris.pregnytalk.utils.NetworkUtils;
 import com.firebase.ui.auth.AuthUI;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -63,8 +65,8 @@ public class MainActivity extends AppCompatActivity
         ChatsListFragment.Callback{                               // Used to interact with NavigationFragment subclasses
 
 
-    @BindView(R.id.drawer_layout) DrawerLayout drawer;
-    @BindView(R.id.nav_view) NavigationView navigationView;
+    @BindView(R.id.drawer_layout) DrawerLayout mDrawer;
+    @BindView(R.id.nav_view) NavigationView mNavigationView;
 
     // Authentication data. Initialized after successful authentication.
     public static String sMyUid="";
@@ -128,13 +130,15 @@ public class MainActivity extends AppCompatActivity
     private void initFirebase(){
         mFirebaseAuth = FirebaseAuth.getInstance();
         mFirebaseDatabase = FirebaseDatabase.getInstance();
-        mAuthStateListener = firebaseAuth -> {
+        mAuthStateListener =
+                firebaseAuth -> {
             final FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
             if(firebaseUser!=null){
                 //user is signed in
                 onSignedInInit(firebaseUser);
             } else {
                 onSignedOutCleanup();
+                if(NetworkUtils.isOnline(this)){
                 startActivityForResult(
                         AuthUI.getInstance()
                                 .createSignInIntentBuilder()
@@ -145,6 +149,18 @@ public class MainActivity extends AppCompatActivity
                                         new AuthUI.IdpConfig.EmailBuilder().build()))
                                 .build(),
                         RC_SIGN_IN);
+                } else {
+                    // If there is no network - show the warning
+                    // And lock the DrawerLayout, so user can see just empty screen with Snackbar
+                    mDrawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+                    Snackbar snackbar = Snackbar.make(mDrawer, R.string.warning_check_internet, Snackbar.LENGTH_INDEFINITE);
+                    snackbar.setAction(R.string.snackbar_retry, v -> {
+                        mDrawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+                        detachListeners();
+                        attachListener();
+                    });
+                    snackbar.show();
+                }
             }
         };
     }
@@ -155,11 +171,11 @@ public class MainActivity extends AppCompatActivity
      */
     private void initNavigation(){
         mNavigationManager = new NavigationManager(getSupportFragmentManager());
-        navigationView.setNavigationItemSelectedListener(this);
-        mHeaderPhoto = navigationView.getHeaderView(0).findViewById(R.id.nav_photoview);
-        mHeaderUsername = navigationView.getHeaderView(0).findViewById(R.id.nav_user_name);
-        mHeaderUserAuthInfo = navigationView.getHeaderView(0).findViewById(R.id.nav_user_auth_info);
-        ImageView mHeaderUserInfoButton = navigationView.getHeaderView(0).findViewById(R.id.iv_nav_user_info_button);
+        mNavigationView.setNavigationItemSelectedListener(this);
+        mHeaderPhoto = mNavigationView.getHeaderView(0).findViewById(R.id.nav_photoview);
+        mHeaderUsername = mNavigationView.getHeaderView(0).findViewById(R.id.nav_user_name);
+        mHeaderUserAuthInfo = mNavigationView.getHeaderView(0).findViewById(R.id.nav_user_auth_info);
+        ImageView mHeaderUserInfoButton = mNavigationView.getHeaderView(0).findViewById(R.id.iv_nav_user_info_button);
         mHeaderUserInfoButton.setOnClickListener(v-> callSelfUserInfo());
     }
 
@@ -187,8 +203,8 @@ public class MainActivity extends AppCompatActivity
      */
     @Override
     public void onBackPressed() {
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
+        if (mDrawer.isDrawerOpen(GravityCompat.START)) {
+            mDrawer.closeDrawer(GravityCompat.START);
         } else {
             if(!mNavigationManager.navigateBack()){
                 finish();
@@ -233,8 +249,11 @@ public class MainActivity extends AppCompatActivity
                 break;
             case R.id.nav_settings:
                 mNavigationManager.navigateToSettings();
+                break;
+            case R.id.nav_about:
+                mNavigationManager.navigateToAbout(this);
         }
-        drawer.closeDrawer(GravityCompat.START);
+        mDrawer.closeDrawer(GravityCompat.START);
         return true;
     }
 
@@ -243,7 +262,7 @@ public class MainActivity extends AppCompatActivity
      * Called from onResume method of NavigationFragment.
      * @param toolbar the toolbar of a Fragment that is currently showing inside container.
      * @param withBackButton if true, the back button will be showed.
-     *                       If false - show drawer "hamburger"
+     *                       If false - show mDrawer "hamburger"
      */
     @Override
     public void bindToolbar(Toolbar toolbar, boolean withBackButton) {
@@ -255,8 +274,8 @@ public class MainActivity extends AppCompatActivity
         } else {
 
             mToggle = new ActionBarDrawerToggle(
-                    this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-            drawer.addDrawerListener(mToggle);
+                    this, mDrawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+            mDrawer.addDrawerListener(mToggle);
             mToggle.syncState();
         }
     }
@@ -267,7 +286,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void unbindToolbar() {
         setSupportActionBar(null);
-        drawer.removeDrawerListener(mToggle);
+        mDrawer.removeDrawerListener(mToggle);
         mToggle=null;
     }
 
@@ -325,7 +344,14 @@ public class MainActivity extends AppCompatActivity
      * Updating user information in NavigationView
      */
     private void updateNavigationHeader() {
-        if(sMe.getPictureUrl()!=null && sMe.getPictureUrl().length()>0) {
+        if(sMe==null){
+            //Clean up
+            mHeaderPhoto.setImageDrawable(null);
+            mHeaderUsername.clearComposingText();
+            mHeaderUserAuthInfo.clearComposingText();
+            return;
+        }
+        if(sMe.getPictureUrl().length()>0) {
             Picasso.get()
                     .load(sMe.getPictureUrl())
                     .fit()
@@ -352,6 +378,9 @@ public class MainActivity extends AppCompatActivity
         sMyUid = null;
         sMe = null;
         detachDatabaseReadListener();
+        updateNavigationHeader();
+        mNavigationManager.popAll();
+        isMessagesListShown = false;
     }
 
     private void detachDatabaseReadListener() {
@@ -383,15 +412,27 @@ public class MainActivity extends AppCompatActivity
         return mNavigationManager;
     }
 
+
+
     @Override
     protected void onResume() {
         super.onResume();
+        attachListener();
+
+    }
+
+    private void attachListener() {
         mFirebaseAuth.addAuthStateListener(mAuthStateListener);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
+        detachListeners();
+
+    }
+
+    private void detachListeners() {
         mFirebaseAuth.removeAuthStateListener(mAuthStateListener);
         detachDatabaseReadListener();
     }

@@ -17,6 +17,7 @@ public class ChatsListService extends RemoteViewsService {
     public RemoteViewsFactory onGetViewFactory(Intent intent) {
         if(!intent.hasExtra(BUNDLE_CHATROOMS_LIST)){return null;}
         Bundle bundle = intent.getBundleExtra(BUNDLE_CHATROOMS_LIST);
+        @SuppressWarnings("unchecked")
         ArrayList<ChatRoom> chatRooms = (ArrayList<ChatRoom>)bundle.getSerializable(EXTRA_CHATROOMS_LIST);
         return new ChatsListFactory(this, chatRooms);
     }

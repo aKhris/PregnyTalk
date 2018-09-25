@@ -12,6 +12,7 @@ import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -48,12 +49,13 @@ public class ChatsListFragment extends NavigationFragment
     implements CreateChatFragment.Callback, ItemClickListener, SwipeableRecyclerView.SwipeCallbacks, NavigationManagerCallback, MenuItem.OnMenuItemClickListener {
 
 
-
+    private static final String TAG = "ChatsListFragment";
     @BindView(R.id.toolbar) Toolbar mToolbar;
     @BindView(R.id.rv_chats_list) SwipeableRecyclerView mChatsList;
     @Nullable @BindView(R.id.nsv_chats_list) NestedScrollView mNestedChatsList;
     @Nullable @BindView(R.id.fl_chat_container) FrameLayout mChatContainer;
-    @Nullable @BindView(R.id.tv_chats_list_hint) TextView mHint;
+    @Nullable @BindView(R.id.tv_chats_list_hint) TextView mSelectChatHint;
+    @BindView(R.id.tv_add_chat_hint) TextView mAddChatHint;
 
     // Argument passed to new instance of a fragment
     private static final String ARG_CHAT_ROOM_ID = "chat_room_id";
@@ -252,7 +254,9 @@ public class ChatsListFragment extends NavigationFragment
                                             chatRoom.setName(String.format(getString(R.string.chat_with_format_string), anotherUserName));
                                         }
                                     }
+
                                     mAdapter.addChatRoom(chatRoom);
+                                    checkHintVisibility();
 
                                     if (mChatContainer!=null && chatRoomId.equals(mNavigateToChatRoomId)){
                                         navigateToChat(chatRoomId);
@@ -261,7 +265,9 @@ public class ChatsListFragment extends NavigationFragment
 
                                 }
 
-                                @Override public void onCancelled(@NonNull DatabaseError databaseError) { }
+                                @Override public void onCancelled(@NonNull DatabaseError databaseError) {
+                                    Log.e(TAG, "onCancelled: ChatsListFragment error:\n", databaseError.toException());
+                                }
                             });
                 }
 
@@ -278,15 +284,33 @@ public class ChatsListFragment extends NavigationFragment
                     ChatRoom chatRoom = getChatRoomFromDataSnapshot(dataSnapshot);
                     if(chatRoom!=null) {
                         mAdapter.removeChatRoom(chatRoom);
+                        checkHintVisibility();
                     }
                 }
                 @Override public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) { }
-                @Override public void onCancelled(@NonNull DatabaseError databaseError) { }
+                @Override public void onCancelled(@NonNull DatabaseError databaseError) {
+                    Log.e(TAG, "onCancelled: ChatsListFragment error:\n", databaseError.toException());
+                }
             };
         }
 
         mUserChatsQuery
                 .addChildEventListener(mUserRoomIdsChildListener);
+    }
+
+    /**
+     * Setting RecyclerView's visibility and text hint underneath it
+     */
+    private void checkHintVisibility() {
+        int count = mAdapter.getItemCount();
+        if(count>0){
+                mChatsList.setVisibility(View.VISIBLE);
+                mAddChatHint.setVisibility(View.INVISIBLE);
+        } else {
+                mChatsList.setVisibility(View.INVISIBLE);
+                mAddChatHint.setVisibility(View.VISIBLE);
+        }
+
     }
 
     /**
@@ -318,8 +342,8 @@ public class ChatsListFragment extends NavigationFragment
         if(mInfoItem!=null && !mInfoItem.isVisible()){
             mInfoItem.setVisible(true);
         }
-        if(mHint!=null){
-            mHint.setVisibility(View.GONE);
+        if(mSelectChatHint !=null){
+            mSelectChatHint.setVisibility(View.GONE);
         }
     }
 

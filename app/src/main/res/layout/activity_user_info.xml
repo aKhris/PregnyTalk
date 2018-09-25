@@ -3,20 +3,17 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:fitsSystemWindows="true">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
         <android.support.design.widget.AppBarLayout
             android:layout_width="match_parent"
-            android:layout_height="@dimen/user_info_app_bar_height"
-            android:fitsSystemWindows="true">
+            android:layout_height="@dimen/user_info_app_bar_height">
 
             <android.support.design.widget.CollapsingToolbarLayout
                 android:id="@+id/collapsing_toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 app:layout_scrollFlags="scroll"
-                android:fitsSystemWindows="true"
                 app:expandedTitleMarginStart="48dp"
                 app:expandedTitleMarginEnd="64dp"
                 app:titleEnabled="false"
@@ -28,7 +25,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="?attr/actionBarSize"
                     app:popupTheme="@style/AppTheme.PopupOverlay"
-                    android:fitsSystemWindows="true"
                     app:layout_constraintTop_toTopOf="parent"
                     app:navigationIcon="@drawable/ic_arrow_back_black_24dp"
                     />
@@ -41,7 +37,6 @@
                     android:scaleType="center"
                     app:srcCompat="@drawable/ic_add_a_photo_32dp"
                     android:contentDescription="@string/content_description_user_avatar"
-                    android:fitsSystemWindows="true"
                     android:transitionName="@string/transition_user_info_photo"
                     />
 

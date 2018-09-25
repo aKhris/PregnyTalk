@@ -8,6 +8,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,6 +34,7 @@ public class ChatInfoFragment extends NavigationFragment
         implements NavigationManagerCallback,
         ChatRoomDetailsListAdapter.Callback {
 
+    private static final String TAG = "ChatInfoFragment";
     @BindView(R.id.toolbar) Toolbar mToolbar;
     @BindView(R.id.rv_chat_info_list) RecyclerView mChatInfoList;
 
@@ -144,7 +146,7 @@ public class ChatInfoFragment extends NavigationFragment
 
                 @Override
                 public void onCancelled(@NonNull DatabaseError databaseError) {
-
+                    Log.e(TAG, "onCancelled: ChatsListFragment error:\n", databaseError.toException());
                 }
             };
             mChatRoomMetaDataReference.addValueEventListener(mChatRoomMetaDataEventListener);
